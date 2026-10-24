@@ -77,6 +77,8 @@ test.describe('Régression backoffice', () => {
     await shop.addToCart('p-007', 1);
     await page.goto('/commande');
     await shop.fillCheckout(CARTE_ACCEPTEE);
+    // Attente explicite : lire le numéro avant l'affichage de la confirmation donnerait une chaîne vide.
+    await expect(shop.tid('order-id')).toHaveText(/^CMD-\d{5}$/);
     const orderId = (await shop.tid('order-id').textContent())!;
 
     await page.goto('/admin');
