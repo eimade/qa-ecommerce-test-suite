@@ -1,0 +1,123 @@
+# Pipeline Azure DevOps équivalent à .github/workflows/ci.yml (non exécuté : pas d'organisation
+# Azure DevOps ; structure vérifiée par `npm run validate:pipelines`).
+# Spécificités Azure : PublishTestResults alimente l'onglet « Tests » du run (JUnit),
+# PublishPipelineArtifact conserve les rapports HTML Newman et Playwright.
+
+trigger:
+  branches:
+    include: [main]
+pr:
+  branches:
+    include: ['*']
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  NODE_VERSION: '22.x'
+  SHOP_PORT: '13100'
+  ADMIN_TOKEN: demo-admin-token-ci
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+
+stages:
+  - stage: Qualite
+    displayName: Build, unitaires et référentiel
+    jobs:
+      - job: qualite
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              path: $(npm_config_cache)
+          - script: npm ci
+            displayName: Installation
+          - script: npm run typecheck
+            displayName: Typage TypeScript
+          - script: npm run build
+            displayName: Build de la boutique
+          - script: npm run test:unit
+            displayName: Tests unitaires et d'intégration (Vitest + Supertest)
+          - script: npm run xray:cases
+            displayName: Cohérence du référentiel Xray
+          - script: git diff --exit-code -- docs/03-matrice-tracabilite.md xray/import
+            displayName: Matrice et imports Xray à jour
+          - script: npm run validate:pipelines
+            displayName: Validation des pipelines
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: reports/unit/junit.xml
+              testRunTitle: Unitaires
+
+  - stage: Campagne
+    displayName: Campagne API, E2E et performance
+    dependsOn: Qualite
+    jobs:
+      - job: campagne
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(NODE_VERSION)
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              path: $(npm_config_cache)
+          - script: npm ci
+            displayName: Installation
+          - script: npm run build
+            displayName: Build
+          - script: |
+              PORT=$(SHOP_PORT) ENABLE_TEST_RESET=true nohup node shop-demo/dist/server.js > shop.log 2>&1 &
+              npx --yes wait-on --timeout 30000 http://localhost:$(SHOP_PORT)/api/health
+            displayName: Démarrage de la boutique (port 13100)
+          - script: npm run test:api -- --env-var adminToken=$(ADMIN_TOKEN)
+            displayName: Tests API (Postman / Newman)
+          - script: npx playwright install --with-deps chromium
+            displayName: Navigateur Playwright
+            condition: succeededOrFailed()
+          - script: npm run test:e2e
+            displayName: Tests E2E et régression (Playwright)
+            condition: succeededOrFailed()
+            env:
+              CI: 'true'
+          - script: npm run test:perf
+            displayName: Test de performance léger (autocannon)
+            condition: succeededOrFailed()
+          - script: npm run xray:results
+            displayName: Export des résultats au format Xray (simulation)
+            condition: succeededOrFailed()
+          - script: npm run report
+            displayName: Rapport de campagne
+            condition: succeededOrFailed()
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: |
+                reports/newman/junit.xml
+                reports/playwright/junit.xml
+              mergeTestResults: true
+              testRunTitle: Campagne de régression ShopQA
+          - task: PublishPipelineArtifact@1
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: reports
+              artifact: rapports-campagne
+
+  - stage: Docker
+    displayName: Image Docker et campagne API conteneurisée
+    dependsOn: Qualite
+    jobs:
+      - job: docker
+        steps:
+          - script: docker compose up -d --build --wait
+            displayName: Build et démarrage
+          - script: docker compose --profile qa run --rm newman
+            displayName: Newman dans un conteneur
+          - script: docker compose --profile qa down
+            displayName: Arrêt
+            condition: always()

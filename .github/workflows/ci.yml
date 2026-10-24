@@ -1,0 +1,98 @@
+name: CI - campagne de tests ShopQA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '22'
+  SHOP_PORT: '13100'
+  ADMIN_TOKEN: demo-admin-token-ci
+
+jobs:
+  qualite:
+    name: Build, unitaires et référentiel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Typage TypeScript
+        run: npm run typecheck
+      - name: Build de la boutique
+        run: npm run build
+      - name: Tests unitaires et d'intégration (Vitest + Supertest)
+        run: npm run test:unit
+      - name: Cohérence du référentiel Xray (exigences, cas, implémentation)
+        run: npm run xray:cases
+      - name: Matrice et imports Xray à jour dans le dépôt
+        run: git diff --exit-code -- docs/03-matrice-tracabilite.md xray/import
+      - name: Validation des pipelines (GitHub + Azure DevOps)
+        run: npm run validate:pipelines
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: rapports-unitaires
+          path: reports/unit
+
+  campagne:
+    name: Campagne API, E2E et performance
+    needs: qualite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Démarrage de la boutique (port 13100)
+        run: |
+          PORT=$SHOP_PORT ENABLE_TEST_RESET=true nohup node shop-demo/dist/server.js > shop.log 2>&1 &
+          npx --yes wait-on --timeout 30000 http://localhost:$SHOP_PORT/api/health
+      - name: Tests API (Postman / Newman)
+        run: npm run test:api -- --env-var adminToken=$ADMIN_TOKEN
+      - name: Navigateur Playwright
+        if: ${{ !cancelled() }}
+        run: npx playwright install --with-deps chromium
+      - name: Tests E2E et régression (Playwright)
+        if: ${{ !cancelled() }}
+        run: npm run test:e2e
+      - name: Test de performance léger (autocannon)
+        if: ${{ !cancelled() }}
+        run: npm run test:perf
+      - name: Export des résultats au format Xray (simulation)
+        if: ${{ !cancelled() }}
+        run: npm run xray:results
+      - name: Rapport de campagne
+        if: ${{ !cancelled() }}
+        run: |
+          npm run report
+          cat reports/rapport-campagne.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: rapports-campagne
+          path: |
+            reports/
+            shop.log
+
+  docker:
+    name: Image Docker et campagne API conteneurisée
+    needs: qualite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build et démarrage
+        run: docker compose up -d --build --wait
+      - name: Newman dans un conteneur
+        run: docker compose --profile qa run --rm newman
+      - name: Arrêt
+        if: always()
+        run: docker compose --profile qa down
