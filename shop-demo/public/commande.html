@@ -17,7 +17,7 @@
     <h1>Commande</h1>
     <div class="message" data-testid="message" role="status" hidden></div>
     <p>Total à payer : <strong data-testid="checkout-total"></strong></p>
-    <form class="checkout" data-testid="checkout-form" novalidate>
+    <form class="checkout" data-testid="checkout-form" method="post" novalidate>
       <label>Nom complet <input name="name" autocomplete="name" data-testid="name"></label>
       <label>Email <input name="email" type="email" autocomplete="email" data-testid="email"></label>
       <label>Adresse <input name="address" autocomplete="street-address" data-testid="address"></label>
@@ -25,7 +25,7 @@
       <label>Ville <input name="city" data-testid="city"></label>
       <label>Numéro de carte (simulé) <input name="cardNumber" inputmode="numeric" data-testid="cardNumber"></label>
       <p class="muted">Paiement simulé : 4242 4242 4242 4242 accepté, 4000 0000 0000 0002 refusé.</p>
-      <button type="submit" data-testid="pay">Payer</button>
+      <button type="submit" data-testid="pay" disabled>Payer</button>
     </form>
     <section data-testid="confirmation" hidden>
       <h2>Merci pour votre commande</h2>
@@ -39,10 +39,7 @@
     import { api, currentCartId, euros, forgetCart, refreshCartBadge, showMessage } from '/app.js';
 
     const $ = (id) => document.querySelector(`[data-testid="${id}"]`);
-    const cartId = await currentCartId();
-    const cart = await api(`/carts/${cartId}`);
-    $('checkout-total').textContent = euros(cart.totals.totalCents);
-    refreshCartBadge();
+    let cartId;
 
     $('checkout-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -68,6 +65,14 @@
         $('pay').disabled = false;
       }
     });
+
+    // Gestionnaire attaché avant tout appel asynchrone, bouton activé une fois la page prête :
+    // un clic précoce ne peut plus déclencher la soumission native du formulaire (correctif ANO-002).
+    cartId = await currentCartId();
+    const cart = await api(`/carts/${cartId}`);
+    $('checkout-total').textContent = euros(cart.totals.totalCents);
+    $('pay').disabled = false;
+    refreshCartBadge();
   </script>
 </body>
 </html>

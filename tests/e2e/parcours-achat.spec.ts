@@ -51,5 +51,22 @@ test.describe('Parcours d achat', () => {
     await shop.fillCheckout('1234 5678 9012 3456');
     await expect(shop.tid('message')).toHaveText('Numéro de carte invalide');
     await expect(shop.tid('confirmation')).toBeHidden();
+
+    // Non-régression ANO-002 : aucune soumission native, les données saisies ne fuient pas dans l'URL.
+    await expect(shop.page).toHaveURL(/\/commande$/);
+  });
+
+  test('SHOP-209 Bouton Payer inactif tant que la page de commande n est pas prête @regression', async ({ shop, page }) => {
+    await shop.openCatalogue();
+    await shop.addToCart('p-001', 1);
+    // Ralentit volontairement le chargement du panier pour observer l'état initial de la page.
+    await page.route('**/api/carts/*', async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.continue();
+    });
+    await page.goto('/commande');
+    await expect(shop.tid('pay')).toBeDisabled();
+    await expect(shop.tid('pay')).toBeEnabled();
+    await expect(shop.tid('checkout-total')).toHaveText(/24,80/);
   });
 });

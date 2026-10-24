@@ -2,13 +2,13 @@
 
 > Généré le 2026-10-24 par `npm run report` à partir des rapports Newman, Playwright, autocannon et Vitest de l'exécution.
 
-Environnement : Docker Desktop sous Windows, boutique conteneurisée (port 13100) ; test de performance lancé depuis le réseau Docker (la redirection de port de Docker Desktop fausse les latences mesurées depuis l'hôte)
+Environnement : Docker Desktop sous Windows, boutique conteneurisée (port 13100)
 
 ## Synthèse
 
 - **Verdict : GO** (critère de sortie : 100 % des cas critiques et hauts réussis, aucune anomalie bloquante ou majeure ouverte)
-- Cas exécutés : 24 / 26 (92.3 %) ; non exécutés : 2 (cas manuels hors CI)
-- Taux de réussite des cas exécutés : **100.0 %** (24 réussis, 0 en échec)
+- Cas exécutés : 25 / 27 (92.6 %) ; non exécutés : 2 (cas manuels hors CI)
+- Taux de réussite des cas exécutés : **100.0 %** (25 réussis, 0 en échec)
 - Exigences validées : 15 / 15 (100.0 %)
 - Anomalies ouvertes : 1 (bloquantes ou majeures : 0)
 
@@ -17,7 +17,7 @@ Environnement : Docker Desktop sous Windows, boutique conteneurisée (port 13100
 | Niveau | Outil | Cas | Réussis | Échecs | Détail |
 |---|---|---|---|---|---|
 | API | Postman/Newman | 15 | 15 | 0 | 0 non exécuté(s) |
-| UI (E2E) | Playwright | 8 | 8 | 0 | 0 non exécuté(s) |
+| UI (E2E) | Playwright | 9 | 9 | 0 | 0 non exécuté(s) |
 | Performance | autocannon | 1 | 1 | 0 | 0 non exécuté(s) |
 | Manuel | Manuel | 2 | 0 | 0 | 2 non exécuté(s) |
 | Développement | Vitest (unitaires + intégration API) | 39 tests | 39 | 0 | hors référentiel Xray |
@@ -27,7 +27,7 @@ Environnement : Docker Desktop sous Windows, boutique conteneurisée (port 13100
 
 | Requêtes | Débit moyen | Latence p50 | p90 | p99 (seuil 250 ms) | Erreurs | Statut |
 |---|---|---|---|---|---|---|
-| 4968 | 496.8 req/s | 43 ms | 81 ms | 139 ms | 0 | PASSED |
+| 3508 | 350.8 req/s | 61 ms | 117 ms | 201 ms | 0 | PASSED |
 
 ## Couverture des exigences
 
@@ -42,7 +42,7 @@ Environnement : Docker Desktop sous Windows, boutique conteneurisée (port 13100
 | EX-PAN-04 Livraison 4,90 EUR, offerte dès 50 EUR après remise | Haute | SHOP-105, SHOP-108, SHOP-201, SHOP-205 | VALIDÉE |
 | EX-PAN-05 Codes promo BIENVENUE10 et LIVRAISON, code inconnu refusé | Moyenne | SHOP-108, SHOP-205 | VALIDÉE |
 | EX-CMD-01 Commande payée : confirmation, stock décrémenté, panier clôturé | Critique | SHOP-109, SHOP-201, SHOP-401 | VALIDÉE |
-| EX-CMD-02 Validation des données client et du numéro de carte | Haute | SHOP-110, SHOP-207 | VALIDÉE |
+| EX-CMD-02 Validation des données client et du numéro de carte | Haute | SHOP-110, SHOP-207, SHOP-209 | VALIDÉE |
 | EX-CMD-03 Paiement refusé : aucune commande, panier conservé | Critique | SHOP-111, SHOP-206 | VALIDÉE |
 | EX-BO-01 Backoffice accessible uniquement avec un jeton administrateur | Critique | SHOP-112, SHOP-208 | VALIDÉE |
 | EX-BO-02 Cycle de vie des commandes (PAYEE, EXPEDIEE, LIVREE, ANNULEE) | Haute | SHOP-113, SHOP-208 | VALIDÉE |
@@ -59,11 +59,12 @@ Environnement : Docker Desktop sous Windows, boutique conteneurisée (port 13100
 | Sévérité | Ouvertes | Corrigées / fermées |
 |---|---|---|
 | Bloquante | 0 | 0 |
-| Majeure | 0 | 0 |
+| Majeure | 0 | 1 |
 | Mineure | 1 | 0 |
 | Cosmétique | 0 | 0 |
 
 - ANO-001 (Mineure, Ouverte) : La recherche « casque » remonte aussi « Casquette en laine » - cas SHOP-103, exigence EX-CAT-02
+- ANO-002 (Majeure, Fermée) : Clic sur Payer avant la fin du chargement : soumission native, numéro de carte exposé dans l'URL - cas SHOP-207, exigence EX-CMD-02
 
 ## Recommandation
 

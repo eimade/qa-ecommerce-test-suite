@@ -42,7 +42,7 @@ Fréquence, contournement possible, impact client ou financier.
 | Mineure | Fonction secondaire incorrecte, contournement simple | Recherche trop large |
 | Cosmétique | Libellé, alignement, sans impact fonctionnel | Faute dans un message |
 
-## Exemple réel de la campagne
+## Anomalies réelles de la campagne
 
 ## ANO-001 - La recherche « casque » remonte aussi « Casquette en laine »
 
@@ -60,3 +60,20 @@ Fréquence, contournement possible, impact client ou financier.
 **Attendu** : seul « Casque Bluetooth » est proposé.
 **Obtenu** : « Casquette en laine » et « Casque Bluetooth » : la recherche porte sur une sous-chaîne.
 **Analyse** : détectée lors de la conception des tests unitaires du catalogue. Le besoin (mot entier, préfixe de mot) n'est pas précisé dans l'exigence : question posée au PO. En attendant, SHOP-103 utilise un terme non ambigu.
+
+## ANO-002 - Clic sur Payer avant la fin du chargement : numéro de carte exposé dans l'URL
+
+| Champ | Valeur |
+|---|---|
+| Sévérité | Majeure (donnée de paiement exposée dans l'historique du navigateur et les journaux serveur) |
+| Priorité | Haute |
+| Statut | Fermée (corrigée et vérifiée le jour de la détection) |
+| Exigence | EX-CMD-02 |
+| Cas de test | SHOP-207 (détection), SHOP-209 (non-régression) |
+| Version / environnement | 1.0.0 - local, Chromium |
+| Jeu de données | JDD-CLI-01, JDD-PAY-03 |
+
+**Étapes** : ajouter un article, ouvrir `/commande`, remplir le formulaire et cliquer sur Payer avant la fin du chargement du panier.
+**Attendu** : le paiement est traité par l'application, ou le bouton est inactif tant que la page n'est pas prête.
+**Obtenu** : le formulaire part en soumission GET native, la page se recharge et tous les champs, dont le numéro de carte, apparaissent dans l'URL.
+**Analyse** : repérée sur un échec intermittent de SHOP-207 (message d'erreur attendu jamais affiché). L'analyse a mis en évidence un rechargement complet de la page. Cause : le gestionnaire `submit` n'était attaché qu'après deux appels asynchrones. **Correctif** : gestionnaire attaché d'abord, bouton Payer désactivé jusqu'à ce que la page soit prête, `method="post"` en défense en profondeur. **Preuve de correction** : SHOP-207 vérifie que l'URL reste `/commande`, SHOP-209 ralentit l'API panier et vérifie l'état du bouton ; 27 exécutions sur 27 réussies avec `--repeat-each 3`.

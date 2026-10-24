@@ -2,7 +2,7 @@
 
 > Document généré par `npm run xray:cases` depuis `xray/referentiel-tests.json` (source unique). Ne pas éditer à la main.
 
-Plan de test : **SHOP-100**. 15 exigences, 26 cas de test (24 automatisés, 2 manuels).
+Plan de test : **SHOP-100**. 15 exigences, 27 cas de test (25 automatisés, 2 manuels).
 
 ## Couverture par exigence
 
@@ -17,7 +17,7 @@ Plan de test : **SHOP-100**. 15 exigences, 26 cas de test (24 automatisés, 2 ma
 | EX-PAN-04 | panier | Haute | Livraison 4,90 EUR, offerte dès 50 EUR après remise | SHOP-105, SHOP-108 | SHOP-201, SHOP-205 | - |
 | EX-PAN-05 | panier | Moyenne | Codes promo BIENVENUE10 et LIVRAISON, code inconnu refusé | SHOP-108 | SHOP-205 | - |
 | EX-CMD-01 | checkout | Critique | Commande payée : confirmation, stock décrémenté, panier clôturé | SHOP-109 | SHOP-201 | SHOP-401 |
-| EX-CMD-02 | checkout | Haute | Validation des données client et du numéro de carte | SHOP-110 | SHOP-207 | - |
+| EX-CMD-02 | checkout | Haute | Validation des données client et du numéro de carte | SHOP-110 | SHOP-207, SHOP-209 | - |
 | EX-CMD-03 | checkout | Critique | Paiement refusé : aucune commande, panier conservé | SHOP-111 | SHOP-206 | - |
 | EX-BO-01 | backoffice | Critique | Backoffice accessible uniquement avec un jeton administrateur | SHOP-112 | SHOP-208 | - |
 | EX-BO-02 | backoffice | Haute | Cycle de vie des commandes (PAYEE, EXPEDIEE, LIVREE, ANNULEE) | SHOP-113 | SHOP-208 | - |
@@ -51,6 +51,7 @@ Plan de test : **SHOP-100**. 15 exigences, 26 cas de test (24 automatisés, 2 ma
 | SHOP-206 | Paiement refusé : message et panier conservé (UI) | Automatisé | Playwright | Critique | EX-CMD-03 | JDD-PAY-02 |
 | SHOP-207 | Formulaire de commande invalide (UI) | Automatisé | Playwright | Haute | EX-CMD-02 | JDD-CLI-02, JDD-PAY-03 |
 | SHOP-208 | Expédier puis livrer une commande depuis le backoffice (UI) | Automatisé | Playwright | Haute | EX-BO-01, EX-BO-02 | JDD-ADM-01 |
+| SHOP-209 | Bouton Payer inactif tant que la page de commande n'est pas prête (UI) | Automatisé | Playwright | Haute | EX-CMD-02 | JDD-CAT-01 |
 | SHOP-301 | Charge légère du catalogue | Automatisé | autocannon | Moyenne | EX-NF-01 | JDD-CAT-01 |
 | SHOP-401 | Parcours d'achat au clavier uniquement (accessibilité) | Manuel | Manuel | Moyenne | EX-CMD-01 | JDD-CLI-01, JDD-PAY-01 |
 | SHOP-402 | Affichage du catalogue et du panier sur mobile (375 px) | Manuel | Manuel | Basse | EX-CAT-01 | JDD-CAT-01 |

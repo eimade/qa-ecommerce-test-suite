@@ -38,6 +38,6 @@ La qualité est intégrée au flux (principe SAFe *Built-in Quality*) : une stor
 |---|---|---|
 | Taux de réussite | cas réussis / cas exécutés | 100 % pour livrer |
 | Couverture des exigences | exigences avec au moins un cas exécuté et aucun échec / total | 100 % |
-| Taux d'automatisation | cas automatisés / total des cas | > 80 % (ici 24 / 26) |
+| Taux d'automatisation | cas automatisés / total des cas | > 80 % (ici 25 / 27) |
 | Défauts ouverts par sévérité | registre d'anomalies | 0 Bloquante, 0 Majeure |
 | Durée de la campagne CI | temps du job « campagne » | < 5 min |

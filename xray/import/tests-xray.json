@@ -699,6 +699,11 @@
         "action": "Email, code postal puis carte invalides",
         "data": "voir JDD-CLI-02",
         "result": "Message d'erreur explicite à chaque soumission"
+      },
+      {
+        "action": "Vérifier l'URL après les soumissions",
+        "data": "",
+        "result": "URL inchangée (/commande) : aucune donnée saisie dans l'URL"
       }
     ]
   },
@@ -732,6 +737,33 @@
         "action": "Jeton valide, Expédier puis Livrer",
         "data": "adminToken",
         "result": "Statut EXPEDIEE puis LIVREE, annulation plus proposée"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-209",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Bouton Payer inactif tant que la page de commande n'est pas prête (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-CMD-02"
+      ],
+      "description": "Exigences couvertes : EX-CMD-02\nJeux de données : JDD-CAT-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Ouvrir /commande avec un chargement du panier ralenti",
+        "data": "latence simulée 800 ms",
+        "result": "Bouton Payer désactivé puis activé, total 24,80 EUR affiché"
       }
     ]
   },

@@ -3,74 +3,758 @@
   "testPlanKey": "SHOP-100",
   "version": "1.0.0",
   "exigences": [
-    { "id": "EX-CAT-01", "titre": "Afficher le catalogue (nom, prix TTC, stock)", "module": "catalogue", "criticite": "Haute" },
-    { "id": "EX-CAT-02", "titre": "Filtrer par catégorie et rechercher par nom ou SKU", "module": "catalogue", "criticite": "Moyenne" },
-    { "id": "EX-CAT-03", "titre": "Un produit en rupture n'est pas commandable", "module": "catalogue", "criticite": "Haute" },
-    { "id": "EX-PAN-01", "titre": "Ajouter un article au panier (cumul sur une ligne)", "module": "panier", "criticite": "Haute" },
-    { "id": "EX-PAN-02", "titre": "Modifier la quantité ou retirer une ligne", "module": "panier", "criticite": "Moyenne" },
-    { "id": "EX-PAN-03", "titre": "Quantité entière de 1 à 10 et limitée au stock", "module": "panier", "criticite": "Haute" },
-    { "id": "EX-PAN-04", "titre": "Livraison 4,90 EUR, offerte dès 50 EUR après remise", "module": "panier", "criticite": "Haute" },
-    { "id": "EX-PAN-05", "titre": "Codes promo BIENVENUE10 et LIVRAISON, code inconnu refusé", "module": "panier", "criticite": "Moyenne" },
-    { "id": "EX-CMD-01", "titre": "Commande payée : confirmation, stock décrémenté, panier clôturé", "module": "checkout", "criticite": "Critique" },
-    { "id": "EX-CMD-02", "titre": "Validation des données client et du numéro de carte", "module": "checkout", "criticite": "Haute" },
-    { "id": "EX-CMD-03", "titre": "Paiement refusé : aucune commande, panier conservé", "module": "checkout", "criticite": "Critique" },
-    { "id": "EX-BO-01", "titre": "Backoffice accessible uniquement avec un jeton administrateur", "module": "backoffice", "criticite": "Critique" },
-    { "id": "EX-BO-02", "titre": "Cycle de vie des commandes (PAYEE, EXPEDIEE, LIVREE, ANNULEE)", "module": "backoffice", "criticite": "Haute" },
-    { "id": "EX-NF-01", "titre": "Catalogue : p99 < 250 ms et 0 erreur sous 25 connexions", "module": "performance", "criticite": "Moyenne" },
-    { "id": "EX-NF-02", "titre": "Erreurs API au format stable { error: { code, message } }", "module": "robustesse", "criticite": "Moyenne" }
+    {
+      "id": "EX-CAT-01",
+      "titre": "Afficher le catalogue (nom, prix TTC, stock)",
+      "module": "catalogue",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-CAT-02",
+      "titre": "Filtrer par catégorie et rechercher par nom ou SKU",
+      "module": "catalogue",
+      "criticite": "Moyenne"
+    },
+    {
+      "id": "EX-CAT-03",
+      "titre": "Un produit en rupture n'est pas commandable",
+      "module": "catalogue",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-PAN-01",
+      "titre": "Ajouter un article au panier (cumul sur une ligne)",
+      "module": "panier",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-PAN-02",
+      "titre": "Modifier la quantité ou retirer une ligne",
+      "module": "panier",
+      "criticite": "Moyenne"
+    },
+    {
+      "id": "EX-PAN-03",
+      "titre": "Quantité entière de 1 à 10 et limitée au stock",
+      "module": "panier",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-PAN-04",
+      "titre": "Livraison 4,90 EUR, offerte dès 50 EUR après remise",
+      "module": "panier",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-PAN-05",
+      "titre": "Codes promo BIENVENUE10 et LIVRAISON, code inconnu refusé",
+      "module": "panier",
+      "criticite": "Moyenne"
+    },
+    {
+      "id": "EX-CMD-01",
+      "titre": "Commande payée : confirmation, stock décrémenté, panier clôturé",
+      "module": "checkout",
+      "criticite": "Critique"
+    },
+    {
+      "id": "EX-CMD-02",
+      "titre": "Validation des données client et du numéro de carte",
+      "module": "checkout",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-CMD-03",
+      "titre": "Paiement refusé : aucune commande, panier conservé",
+      "module": "checkout",
+      "criticite": "Critique"
+    },
+    {
+      "id": "EX-BO-01",
+      "titre": "Backoffice accessible uniquement avec un jeton administrateur",
+      "module": "backoffice",
+      "criticite": "Critique"
+    },
+    {
+      "id": "EX-BO-02",
+      "titre": "Cycle de vie des commandes (PAYEE, EXPEDIEE, LIVREE, ANNULEE)",
+      "module": "backoffice",
+      "criticite": "Haute"
+    },
+    {
+      "id": "EX-NF-01",
+      "titre": "Catalogue : p99 < 250 ms et 0 erreur sous 25 connexions",
+      "module": "performance",
+      "criticite": "Moyenne"
+    },
+    {
+      "id": "EX-NF-02",
+      "titre": "Erreurs API au format stable { error: { code, message } }",
+      "module": "robustesse",
+      "criticite": "Moyenne"
+    }
   ],
   "cas": [
-    { "key": "SHOP-101", "titre": "Lister le catalogue et vérifier le contrat de données", "exigences": ["EX-CAT-01"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Haute", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "GET /api/products", "donnees": "aucune", "attendu": "200, 8 produits, prix en centimes entiers" }] },
-    { "key": "SHOP-102", "titre": "Filtrer par catégorie (valide et inconnue)", "exigences": ["EX-CAT-02", "EX-NF-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Moyenne", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "GET /api/products?category=high-tech", "donnees": "category=high-tech", "attendu": "200, 2 produits high-tech" }, { "action": "GET /api/products?category=jardin", "donnees": "category=jardin", "attendu": "400 VALIDATION_ERROR" }] },
-    { "key": "SHOP-103", "titre": "Rechercher un produit (insensible à la casse)", "exigences": ["EX-CAT-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Moyenne", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "GET /api/products?q=mug", "donnees": "q=mug", "attendu": "Un seul résultat MUG-CER-35" }] },
-    { "key": "SHOP-104", "titre": "Consulter un produit inexistant", "exigences": ["EX-NF-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Basse", "jdd": [],
-      "etapes": [{ "action": "GET /api/products/p-999", "donnees": "id=p-999", "attendu": "404 NOT_FOUND au format standard" }] },
-    { "key": "SHOP-105", "titre": "Créer un panier, ajouter et cumuler un article", "exigences": ["EX-PAN-01", "EX-PAN-04"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Haute", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "POST /api/carts", "donnees": "aucune", "attendu": "201, panier vide" }, { "action": "Ajouter p-001 x2", "donnees": "p-001, 2", "attendu": "Total 44,70 EUR dont 4,90 de livraison" }, { "action": "Ajouter p-001 x1", "donnees": "p-001, 1", "attendu": "Une ligne, quantité 3, livraison offerte" }] },
-    { "key": "SHOP-106", "titre": "Refuser un produit en rupture ou une quantité supérieure au stock", "exigences": ["EX-CAT-03", "EX-PAN-03"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Haute", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "Ajouter p-003 (stock 0)", "donnees": "p-003, 1", "attendu": "409 OUT_OF_STOCK" }, { "action": "Ajouter p-005 x3 (stock 2)", "donnees": "p-005, 3", "attendu": "409, available=2" }] },
-    { "key": "SHOP-107", "titre": "Quantités hors bornes (0 et 11)", "exigences": ["EX-PAN-03"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Moyenne", "jdd": ["JDD-PAN-02"],
-      "etapes": [{ "action": "Ajouter quantité 0 puis 11", "donnees": "0 ; 11", "attendu": "400 VALIDATION_ERROR sur quantity" }] },
-    { "key": "SHOP-108", "titre": "Appliquer un code promo inconnu puis BIENVENUE10", "exigences": ["EX-PAN-05", "EX-PAN-04"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Moyenne", "jdd": ["JDD-PRO-01"],
-      "etapes": [{ "action": "POST promo NOEL99", "donnees": "NOEL99", "attendu": "422 PROMO_INVALID" }, { "action": "POST promo bienvenue10", "donnees": "bienvenue10", "attendu": "Remise 1,99 EUR (arrondi inférieur)" }] },
-    { "key": "SHOP-109", "titre": "Passer une commande valide", "exigences": ["EX-CMD-01"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Critique", "jdd": ["JDD-CLI-01", "JDD-PAY-01"],
-      "etapes": [{ "action": "POST /api/orders", "donnees": "client valide, carte 4242...", "attendu": "201, statut PAYEE, référence PAY-xxxxxx" }, { "action": "GET /api/products/p-001", "donnees": "", "attendu": "Stock 49" }, { "action": "GET panier", "donnees": "", "attendu": "404 : panier clôturé" }] },
-    { "key": "SHOP-110", "titre": "Refuser des données client ou une carte invalides", "exigences": ["EX-CMD-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Haute", "jdd": ["JDD-CLI-02", "JDD-PAY-03"],
-      "etapes": [{ "action": "Commander avec email invalide", "donnees": "pas-un-email", "attendu": "400 sur email" }, { "action": "Commander avec carte non Luhn", "donnees": "4242424242424241", "attendu": "400 sur cardNumber" }] },
-    { "key": "SHOP-111", "titre": "Paiement refusé par le prestataire", "exigences": ["EX-CMD-03"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Critique", "jdd": ["JDD-PAY-02"],
-      "etapes": [{ "action": "Commander avec la carte refusée", "donnees": "4000000000000002", "attendu": "402 PAYMENT_DECLINED" }, { "action": "GET panier", "donnees": "", "attendu": "Panier conservé" }] },
-    { "key": "SHOP-112", "titre": "Contrôle d'accès du backoffice", "exigences": ["EX-BO-01"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Critique", "jdd": ["JDD-ADM-01"],
-      "etapes": [{ "action": "GET /api/admin/orders sans jeton", "donnees": "", "attendu": "401" }, { "action": "Avec jeton", "donnees": "adminToken", "attendu": "200, commande visible" }] },
-    { "key": "SHOP-113", "titre": "Transitions de statut de commande", "exigences": ["EX-BO-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Haute", "jdd": ["JDD-ADM-01"],
-      "etapes": [{ "action": "PAYEE -> LIVREE", "donnees": "", "attendu": "409 INVALID_TRANSITION" }, { "action": "PAYEE -> EXPEDIEE", "donnees": "", "attendu": "200" }] },
-    { "key": "SHOP-114", "titre": "Robustesse : JSON malformé et route inconnue", "exigences": ["EX-NF-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Basse", "jdd": [],
-      "etapes": [{ "action": "POST avec JSON tronqué", "donnees": "{\"productId\": \"p-001\",", "attendu": "400 MALFORMED_JSON" }, { "action": "GET /api/inexistant", "donnees": "", "attendu": "404 JSON" }] },
-    { "key": "SHOP-115", "titre": "Modifier la quantité et retirer une ligne via l'API", "exigences": ["EX-PAN-02"], "type": "Automatisé", "outil": "Postman/Newman", "priorite": "Moyenne", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "PATCH quantité 1", "donnees": "p-001", "attendu": "Totaux recalculés" }, { "action": "DELETE ligne p-004", "donnees": "p-004", "attendu": "Ligne retirée" }] },
-    { "key": "SHOP-201", "titre": "Parcours d'achat complet avec carte acceptée (UI)", "exigences": ["EX-CMD-01", "EX-PAN-01", "EX-PAN-04"], "type": "Automatisé", "outil": "Playwright", "priorite": "Critique", "jdd": ["JDD-CLI-01", "JDD-PAY-01"],
-      "etapes": [{ "action": "Ajouter p-002 x1 et p-004 x2", "donnees": "", "attendu": "Badge panier = 3" }, { "action": "Ouvrir le panier", "donnees": "", "attendu": "Sous-total 70,00 EUR, livraison offerte" }, { "action": "Payer", "donnees": "4242 4242 4242 4242", "attendu": "Confirmation CMD-xxxxx, stock p-002 = 19" }] },
-    { "key": "SHOP-202", "titre": "Filtrer et rechercher dans le catalogue (UI)", "exigences": ["EX-CAT-01", "EX-CAT-02"], "type": "Automatisé", "outil": "Playwright", "priorite": "Moyenne", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "Filtrer Maison", "donnees": "maison", "attendu": "3 produits" }, { "action": "Rechercher chargeur", "donnees": "chargeur", "attendu": "1 produit p-008" }] },
-    { "key": "SHOP-203", "titre": "Produit en rupture non commandable (UI)", "exigences": ["EX-CAT-03"], "type": "Automatisé", "outil": "Playwright", "priorite": "Haute", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "Afficher p-003", "donnees": "", "attendu": "Indisponible, bouton désactivé" }] },
-    { "key": "SHOP-204", "titre": "Modifier, dépasser le stock et retirer une ligne (UI)", "exigences": ["EX-PAN-02", "EX-PAN-03"], "type": "Automatisé", "outil": "Playwright", "priorite": "Moyenne", "jdd": ["JDD-PAN-01"],
-      "etapes": [{ "action": "Passer la lampe à 2", "donnees": "2", "attendu": "Total ligne 79,80 EUR" }, { "action": "Passer la lampe à 3", "donnees": "3", "attendu": "Message stock insuffisant, quantité revenue à 2" }, { "action": "Retirer les lignes", "donnees": "", "attendu": "Panier vide affiché" }] },
-    { "key": "SHOP-205", "titre": "Seuil de livraison gratuite et code promo (UI)", "exigences": ["EX-PAN-04", "EX-PAN-05"], "type": "Automatisé", "outil": "Playwright", "priorite": "Haute", "jdd": ["JDD-PRO-01"],
-      "etapes": [{ "action": "Panier plaid 59 EUR", "donnees": "", "attendu": "Livraison offerte" }, { "action": "Code CODEFAUX", "donnees": "CODEFAUX", "attendu": "Message code inconnu" }, { "action": "Code BIENVENUE10", "donnees": "BIENVENUE10", "attendu": "Remise 5,90, total 53,10, livraison offerte" }] },
-    { "key": "SHOP-206", "titre": "Paiement refusé : message et panier conservé (UI)", "exigences": ["EX-CMD-03"], "type": "Automatisé", "outil": "Playwright", "priorite": "Critique", "jdd": ["JDD-PAY-02"],
-      "etapes": [{ "action": "Payer avec la carte refusée", "donnees": "4000 0000 0000 0002", "attendu": "Message de refus, badge panier inchangé" }] },
-    { "key": "SHOP-207", "titre": "Formulaire de commande invalide (UI)", "exigences": ["EX-CMD-02"], "type": "Automatisé", "outil": "Playwright", "priorite": "Haute", "jdd": ["JDD-CLI-02", "JDD-PAY-03"],
-      "etapes": [{ "action": "Email, code postal puis carte invalides", "donnees": "voir JDD-CLI-02", "attendu": "Message d'erreur explicite à chaque soumission" }] },
-    { "key": "SHOP-208", "titre": "Expédier puis livrer une commande depuis le backoffice (UI)", "exigences": ["EX-BO-01", "EX-BO-02"], "type": "Automatisé", "outil": "Playwright", "priorite": "Haute", "jdd": ["JDD-ADM-01"],
-      "etapes": [{ "action": "Jeton incorrect", "donnees": "jeton-incorrect", "attendu": "Message d'accès refusé" }, { "action": "Jeton valide, Expédier puis Livrer", "donnees": "adminToken", "attendu": "Statut EXPEDIEE puis LIVREE, annulation plus proposée" }] },
-    { "key": "SHOP-301", "titre": "Charge légère du catalogue", "exigences": ["EX-NF-01"], "type": "Automatisé", "outil": "autocannon", "priorite": "Moyenne", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "25 connexions pendant 10 s sur 3 routes catalogue", "donnees": "", "attendu": "p99 < 250 ms, débit >= 300 req/s, 0 erreur" }] },
-    { "key": "SHOP-401", "titre": "Parcours d'achat au clavier uniquement (accessibilité)", "exigences": ["EX-CMD-01"], "type": "Manuel", "outil": "Manuel", "priorite": "Moyenne", "jdd": ["JDD-CLI-01", "JDD-PAY-01"],
-      "etapes": [{ "action": "Naviguer avec Tab du catalogue à la confirmation", "donnees": "", "attendu": "Tous les contrôles atteignables, focus visible" }] },
-    { "key": "SHOP-402", "titre": "Affichage du catalogue et du panier sur mobile (375 px)", "exigences": ["EX-CAT-01"], "type": "Manuel", "outil": "Manuel", "priorite": "Basse", "jdd": ["JDD-CAT-01"],
-      "etapes": [{ "action": "Ouvrir catalogue et panier en 375 px", "donnees": "", "attendu": "Pas de défilement horizontal, boutons utilisables" }] }
+    {
+      "key": "SHOP-101",
+      "titre": "Lister le catalogue et vérifier le contrat de données",
+      "exigences": [
+        "EX-CAT-01"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "GET /api/products",
+          "donnees": "aucune",
+          "attendu": "200, 8 produits, prix en centimes entiers"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-102",
+      "titre": "Filtrer par catégorie (valide et inconnue)",
+      "exigences": [
+        "EX-CAT-02",
+        "EX-NF-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "GET /api/products?category=high-tech",
+          "donnees": "category=high-tech",
+          "attendu": "200, 2 produits high-tech"
+        },
+        {
+          "action": "GET /api/products?category=jardin",
+          "donnees": "category=jardin",
+          "attendu": "400 VALIDATION_ERROR"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-103",
+      "titre": "Rechercher un produit (insensible à la casse)",
+      "exigences": [
+        "EX-CAT-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "GET /api/products?q=mug",
+          "donnees": "q=mug",
+          "attendu": "Un seul résultat MUG-CER-35"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-104",
+      "titre": "Consulter un produit inexistant",
+      "exigences": [
+        "EX-NF-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Basse",
+      "jdd": [],
+      "etapes": [
+        {
+          "action": "GET /api/products/p-999",
+          "donnees": "id=p-999",
+          "attendu": "404 NOT_FOUND au format standard"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-105",
+      "titre": "Créer un panier, ajouter et cumuler un article",
+      "exigences": [
+        "EX-PAN-01",
+        "EX-PAN-04"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "POST /api/carts",
+          "donnees": "aucune",
+          "attendu": "201, panier vide"
+        },
+        {
+          "action": "Ajouter p-001 x2",
+          "donnees": "p-001, 2",
+          "attendu": "Total 44,70 EUR dont 4,90 de livraison"
+        },
+        {
+          "action": "Ajouter p-001 x1",
+          "donnees": "p-001, 1",
+          "attendu": "Une ligne, quantité 3, livraison offerte"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-106",
+      "titre": "Refuser un produit en rupture ou une quantité supérieure au stock",
+      "exigences": [
+        "EX-CAT-03",
+        "EX-PAN-03"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "Ajouter p-003 (stock 0)",
+          "donnees": "p-003, 1",
+          "attendu": "409 OUT_OF_STOCK"
+        },
+        {
+          "action": "Ajouter p-005 x3 (stock 2)",
+          "donnees": "p-005, 3",
+          "attendu": "409, available=2"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-107",
+      "titre": "Quantités hors bornes (0 et 11)",
+      "exigences": [
+        "EX-PAN-03"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-PAN-02"
+      ],
+      "etapes": [
+        {
+          "action": "Ajouter quantité 0 puis 11",
+          "donnees": "0 ; 11",
+          "attendu": "400 VALIDATION_ERROR sur quantity"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-108",
+      "titre": "Appliquer un code promo inconnu puis BIENVENUE10",
+      "exigences": [
+        "EX-PAN-05",
+        "EX-PAN-04"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-PRO-01"
+      ],
+      "etapes": [
+        {
+          "action": "POST promo NOEL99",
+          "donnees": "NOEL99",
+          "attendu": "422 PROMO_INVALID"
+        },
+        {
+          "action": "POST promo bienvenue10",
+          "donnees": "bienvenue10",
+          "attendu": "Remise 1,99 EUR (arrondi inférieur)"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-109",
+      "titre": "Passer une commande valide",
+      "exigences": [
+        "EX-CMD-01"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Critique",
+      "jdd": [
+        "JDD-CLI-01",
+        "JDD-PAY-01"
+      ],
+      "etapes": [
+        {
+          "action": "POST /api/orders",
+          "donnees": "client valide, carte 4242...",
+          "attendu": "201, statut PAYEE, référence PAY-xxxxxx"
+        },
+        {
+          "action": "GET /api/products/p-001",
+          "donnees": "",
+          "attendu": "Stock 49"
+        },
+        {
+          "action": "GET panier",
+          "donnees": "",
+          "attendu": "404 : panier clôturé"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-110",
+      "titre": "Refuser des données client ou une carte invalides",
+      "exigences": [
+        "EX-CMD-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CLI-02",
+        "JDD-PAY-03"
+      ],
+      "etapes": [
+        {
+          "action": "Commander avec email invalide",
+          "donnees": "pas-un-email",
+          "attendu": "400 sur email"
+        },
+        {
+          "action": "Commander avec carte non Luhn",
+          "donnees": "4242424242424241",
+          "attendu": "400 sur cardNumber"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-111",
+      "titre": "Paiement refusé par le prestataire",
+      "exigences": [
+        "EX-CMD-03"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Critique",
+      "jdd": [
+        "JDD-PAY-02"
+      ],
+      "etapes": [
+        {
+          "action": "Commander avec la carte refusée",
+          "donnees": "4000000000000002",
+          "attendu": "402 PAYMENT_DECLINED"
+        },
+        {
+          "action": "GET panier",
+          "donnees": "",
+          "attendu": "Panier conservé"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-112",
+      "titre": "Contrôle d'accès du backoffice",
+      "exigences": [
+        "EX-BO-01"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Critique",
+      "jdd": [
+        "JDD-ADM-01"
+      ],
+      "etapes": [
+        {
+          "action": "GET /api/admin/orders sans jeton",
+          "donnees": "",
+          "attendu": "401"
+        },
+        {
+          "action": "Avec jeton",
+          "donnees": "adminToken",
+          "attendu": "200, commande visible"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-113",
+      "titre": "Transitions de statut de commande",
+      "exigences": [
+        "EX-BO-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-ADM-01"
+      ],
+      "etapes": [
+        {
+          "action": "PAYEE -> LIVREE",
+          "donnees": "",
+          "attendu": "409 INVALID_TRANSITION"
+        },
+        {
+          "action": "PAYEE -> EXPEDIEE",
+          "donnees": "",
+          "attendu": "200"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-114",
+      "titre": "Robustesse : JSON malformé et route inconnue",
+      "exigences": [
+        "EX-NF-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Basse",
+      "jdd": [],
+      "etapes": [
+        {
+          "action": "POST avec JSON tronqué",
+          "donnees": "{\"productId\": \"p-001\",",
+          "attendu": "400 MALFORMED_JSON"
+        },
+        {
+          "action": "GET /api/inexistant",
+          "donnees": "",
+          "attendu": "404 JSON"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-115",
+      "titre": "Modifier la quantité et retirer une ligne via l'API",
+      "exigences": [
+        "EX-PAN-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Postman/Newman",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "PATCH quantité 1",
+          "donnees": "p-001",
+          "attendu": "Totaux recalculés"
+        },
+        {
+          "action": "DELETE ligne p-004",
+          "donnees": "p-004",
+          "attendu": "Ligne retirée"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-201",
+      "titre": "Parcours d'achat complet avec carte acceptée (UI)",
+      "exigences": [
+        "EX-CMD-01",
+        "EX-PAN-01",
+        "EX-PAN-04"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Critique",
+      "jdd": [
+        "JDD-CLI-01",
+        "JDD-PAY-01"
+      ],
+      "etapes": [
+        {
+          "action": "Ajouter p-002 x1 et p-004 x2",
+          "donnees": "",
+          "attendu": "Badge panier = 3"
+        },
+        {
+          "action": "Ouvrir le panier",
+          "donnees": "",
+          "attendu": "Sous-total 70,00 EUR, livraison offerte"
+        },
+        {
+          "action": "Payer",
+          "donnees": "4242 4242 4242 4242",
+          "attendu": "Confirmation CMD-xxxxx, stock p-002 = 19"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-202",
+      "titre": "Filtrer et rechercher dans le catalogue (UI)",
+      "exigences": [
+        "EX-CAT-01",
+        "EX-CAT-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "Filtrer Maison",
+          "donnees": "maison",
+          "attendu": "3 produits"
+        },
+        {
+          "action": "Rechercher chargeur",
+          "donnees": "chargeur",
+          "attendu": "1 produit p-008"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-203",
+      "titre": "Produit en rupture non commandable (UI)",
+      "exigences": [
+        "EX-CAT-03"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "Afficher p-003",
+          "donnees": "",
+          "attendu": "Indisponible, bouton désactivé"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-204",
+      "titre": "Modifier, dépasser le stock et retirer une ligne (UI)",
+      "exigences": [
+        "EX-PAN-02",
+        "EX-PAN-03"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-PAN-01"
+      ],
+      "etapes": [
+        {
+          "action": "Passer la lampe à 2",
+          "donnees": "2",
+          "attendu": "Total ligne 79,80 EUR"
+        },
+        {
+          "action": "Passer la lampe à 3",
+          "donnees": "3",
+          "attendu": "Message stock insuffisant, quantité revenue à 2"
+        },
+        {
+          "action": "Retirer les lignes",
+          "donnees": "",
+          "attendu": "Panier vide affiché"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-205",
+      "titre": "Seuil de livraison gratuite et code promo (UI)",
+      "exigences": [
+        "EX-PAN-04",
+        "EX-PAN-05"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-PRO-01"
+      ],
+      "etapes": [
+        {
+          "action": "Panier plaid 59 EUR",
+          "donnees": "",
+          "attendu": "Livraison offerte"
+        },
+        {
+          "action": "Code CODEFAUX",
+          "donnees": "CODEFAUX",
+          "attendu": "Message code inconnu"
+        },
+        {
+          "action": "Code BIENVENUE10",
+          "donnees": "BIENVENUE10",
+          "attendu": "Remise 5,90, total 53,10, livraison offerte"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-206",
+      "titre": "Paiement refusé : message et panier conservé (UI)",
+      "exigences": [
+        "EX-CMD-03"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Critique",
+      "jdd": [
+        "JDD-PAY-02"
+      ],
+      "etapes": [
+        {
+          "action": "Payer avec la carte refusée",
+          "donnees": "4000 0000 0000 0002",
+          "attendu": "Message de refus, badge panier inchangé"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-207",
+      "titre": "Formulaire de commande invalide (UI)",
+      "exigences": [
+        "EX-CMD-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CLI-02",
+        "JDD-PAY-03"
+      ],
+      "etapes": [
+        {
+          "action": "Email, code postal puis carte invalides",
+          "donnees": "voir JDD-CLI-02",
+          "attendu": "Message d'erreur explicite à chaque soumission"
+        },
+        {
+          "action": "Vérifier l'URL après les soumissions",
+          "donnees": "",
+          "attendu": "URL inchangée (/commande) : aucune donnée saisie dans l'URL"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-208",
+      "titre": "Expédier puis livrer une commande depuis le backoffice (UI)",
+      "exigences": [
+        "EX-BO-01",
+        "EX-BO-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-ADM-01"
+      ],
+      "etapes": [
+        {
+          "action": "Jeton incorrect",
+          "donnees": "jeton-incorrect",
+          "attendu": "Message d'accès refusé"
+        },
+        {
+          "action": "Jeton valide, Expédier puis Livrer",
+          "donnees": "adminToken",
+          "attendu": "Statut EXPEDIEE puis LIVREE, annulation plus proposée"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-209",
+      "titre": "Bouton Payer inactif tant que la page de commande n'est pas prête (UI)",
+      "exigences": [
+        "EX-CMD-02"
+      ],
+      "type": "Automatisé",
+      "outil": "Playwright",
+      "priorite": "Haute",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "Ouvrir /commande avec un chargement du panier ralenti",
+          "donnees": "latence simulée 800 ms",
+          "attendu": "Bouton Payer désactivé puis activé, total 24,80 EUR affiché"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-301",
+      "titre": "Charge légère du catalogue",
+      "exigences": [
+        "EX-NF-01"
+      ],
+      "type": "Automatisé",
+      "outil": "autocannon",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "25 connexions pendant 10 s sur 3 routes catalogue",
+          "donnees": "",
+          "attendu": "p99 < 250 ms, débit >= 300 req/s, 0 erreur"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-401",
+      "titre": "Parcours d'achat au clavier uniquement (accessibilité)",
+      "exigences": [
+        "EX-CMD-01"
+      ],
+      "type": "Manuel",
+      "outil": "Manuel",
+      "priorite": "Moyenne",
+      "jdd": [
+        "JDD-CLI-01",
+        "JDD-PAY-01"
+      ],
+      "etapes": [
+        {
+          "action": "Naviguer avec Tab du catalogue à la confirmation",
+          "donnees": "",
+          "attendu": "Tous les contrôles atteignables, focus visible"
+        }
+      ]
+    },
+    {
+      "key": "SHOP-402",
+      "titre": "Affichage du catalogue et du panier sur mobile (375 px)",
+      "exigences": [
+        "EX-CAT-01"
+      ],
+      "type": "Manuel",
+      "outil": "Manuel",
+      "priorite": "Basse",
+      "jdd": [
+        "JDD-CAT-01"
+      ],
+      "etapes": [
+        {
+          "action": "Ouvrir catalogue et panier en 375 px",
+          "donnees": "",
+          "attendu": "Pas de défilement horizontal, boutons utilisables"
+        }
+      ]
+    }
   ]
 }

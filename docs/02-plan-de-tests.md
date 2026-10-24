@@ -37,7 +37,7 @@ La correspondance détaillée exigences <-> cas est dans [03-matrice-tracabilite
 | 0 | Prérequis : build + unitaires + intégration | Vitest | 39 tests | `npm run test:unit` |
 | 1 | Smoke (go / no go rapide) | Playwright | SHOP-201, SHOP-203 | `npm run test:e2e:smoke` |
 | 2 | API | Newman | SHOP-101 à SHOP-115 | `npm run test:api` |
-| 3 | UI régression | Playwright | SHOP-201 à SHOP-208 | `npm run test:e2e` |
+| 3 | UI régression | Playwright | SHOP-201 à SHOP-209 | `npm run test:e2e` |
 | 4 | Performance | autocannon | SHOP-301 | `npm run test:perf` |
 | 5 | Manuels | Testeur | SHOP-401, SHOP-402 | Exécution dans Xray |
 | 6 | Restitution | scripts | - | `npm run xray:results` puis `npm run report` |

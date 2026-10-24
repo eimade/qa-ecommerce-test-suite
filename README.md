@@ -19,16 +19,16 @@ Ici, la boutique n'est que le support : l'essentiel du travail se trouve dans `d
 | Matrice de traçabilité exigences <-> cas (générée) | [docs/03-matrice-tracabilite.md](docs/03-matrice-tracabilite.md) |
 | Jeux de données (catalogue, clients, cartes, promos, valeurs limites) | [docs/04-jeux-de-donnees.md](docs/04-jeux-de-donnees.md) |
 | Definition of Done et rituels SAFe, métriques | [docs/05-definition-of-done-safe.md](docs/05-definition-of-done-safe.md) |
-| Gabarit d'anomalie et échelle de sévérité (avec une anomalie réelle) | [docs/06-gabarit-anomalie.md](docs/06-gabarit-anomalie.md) |
+| Gabarit d'anomalie et échelle de sévérité (avec les deux anomalies réelles de la campagne) | [docs/06-gabarit-anomalie.md](docs/06-gabarit-anomalie.md) |
 | Rapport de campagne avec métriques (instantané généré) | [docs/07-rapport-campagne.md](docs/07-rapport-campagne.md) |
 | Correspondance avec les modules SAP Commerce (Hybris) | [docs/08-correspondance-sap-commerce.md](docs/08-correspondance-sap-commerce.md) |
 
 ## Fonctionnalités
 
 - **Boutique à tester** (`shop-demo/`) : API REST Express + 4 pages (catalogue, panier, commande, backoffice). Catalogue filtrable, panier avec contrôle de stock et codes promo, livraison offerte dès 50 EUR, paiement simulé, cycle de vie des commandes.
-- **15 exigences, 26 cas de test** (24 automatisés, 2 manuels) dans une source unique : `xray/referentiel-tests.json`.
+- **15 exigences, 27 cas de test** (25 automatisés, 2 manuels) dans une source unique : `xray/referentiel-tests.json`.
 - **Tests API** : collection Postman de 31 requêtes et 97 assertions, exécutée par Newman (rapport HTML htmlextra, JUnit, JSON).
-- **Tests E2E** Playwright : parcours d'achat et régression (8 scénarios, tags `@smoke` et `@regression`, Page Object, données réinitialisées avant chaque test).
+- **Tests E2E** Playwright : parcours d'achat et régression (9 scénarios, tags `@smoke` et `@regression`, Page Object, données réinitialisées avant chaque test).
 - **Performance** : charge légère du catalogue avec autocannon et seuils bloquants (p99, débit, erreurs).
 - **Xray (simulé)** : import des cas (JSON et CSV) et conversion des résultats Newman, Playwright et autocannon au format d'import d'exécution Xray.
 - **Reporting** : rapport de campagne généré (taux de réussite, couverture des exigences, défauts par sévérité, verdict GO / NO GO).
@@ -169,7 +169,7 @@ Les outils payants ou nécessitant un compte sont remplacés par des bouchons do
 
 ## Résultats de la dernière campagne
 
-Voir [docs/07-rapport-campagne.md](docs/07-rapport-campagne.md) : 24 cas automatisés sur 24 réussis, 15 exigences sur 15 validées, 2 cas manuels à exécuter, 1 anomalie mineure ouverte (ANO-001), verdict GO.
+Voir [docs/07-rapport-campagne.md](docs/07-rapport-campagne.md) : 25 cas automatisés sur 25 réussis, 15 exigences sur 15 validées, 2 cas manuels à exécuter, verdict GO. Deux anomalies réelles relevées : ANO-001 (mineure, recherche trop large, ouverte et à arbitrer par le PO) et ANO-002 (majeure, numéro de carte exposé dans l'URL si on clique sur Payer trop tôt, corrigée et couverte par SHOP-207 et SHOP-209).
 
 ## Limites connues
 

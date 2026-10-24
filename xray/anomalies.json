@@ -18,6 +18,25 @@
       "resultatObtenu": "« Casquette en laine » (p-003) et « Casque Bluetooth » (p-007) sont proposés : la recherche porte sur une sous-chaîne",
       "analyse": "Détectée pendant la conception des tests unitaires du catalogue. Comportement à arbitrer par le Product Owner (recherche par mot entier ou par préfixe de mot). Le cas SHOP-103 utilise un terme non ambigu en attendant la décision.",
       "detecteeLe": "2026-10-24"
+    },
+    {
+      "id": "ANO-002",
+      "titre": "Clic sur Payer avant la fin du chargement : soumission native, numéro de carte exposé dans l'URL",
+      "severite": "Majeure",
+      "priorite": "Haute",
+      "statut": "Fermée",
+      "exigence": "EX-CMD-02",
+      "casDeTest": "SHOP-207",
+      "environnement": "local, version 1.0.0 (Chromium)",
+      "etapes": [
+        "Ajouter un article au panier",
+        "Ouvrir /commande et cliquer sur Payer immédiatement, avant le chargement du panier"
+      ],
+      "resultatAttendu": "Le paiement est traité par l'application ou le bouton est inactif",
+      "resultatObtenu": "Le formulaire est soumis en GET natif : la page se recharge et les champs saisis, dont le numéro de carte, apparaissent dans l'URL (historique, journaux serveur)",
+      "analyse": "Détectée par un échec intermittent de SHOP-207 en exécution locale. Cause : le gestionnaire de soumission était attaché après deux appels asynchrones. Correctif : gestionnaire attaché en premier, bouton Payer désactivé tant que la page n'est pas prête, formulaire en method=post par défense en profondeur. Non-régression : SHOP-207 (URL inchangée) et SHOP-209.",
+      "detecteeLe": "2026-10-24",
+      "corrigeeLe": "2026-10-24"
     }
   ]
 }
