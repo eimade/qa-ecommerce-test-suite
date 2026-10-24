@@ -1,0 +1,819 @@
+[
+  {
+    "update_key": "SHOP-101",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Lister le catalogue et vérifier le contrat de données",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CAT-01"
+      ],
+      "description": "Exigences couvertes : EX-CAT-01\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "GET /api/products",
+        "data": "aucune",
+        "result": "200, 8 produits, prix en centimes entiers"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-102",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Filtrer par catégorie (valide et inconnue)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CAT-02",
+        "EX-NF-02"
+      ],
+      "description": "Exigences couvertes : EX-CAT-02, EX-NF-02\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "GET /api/products?category=high-tech",
+        "data": "category=high-tech",
+        "result": "200, 2 produits high-tech"
+      },
+      {
+        "action": "GET /api/products?category=jardin",
+        "data": "category=jardin",
+        "result": "400 VALIDATION_ERROR"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-103",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Rechercher un produit (insensible à la casse)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CAT-02"
+      ],
+      "description": "Exigences couvertes : EX-CAT-02\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "GET /api/products?q=mug",
+        "data": "q=mug",
+        "result": "Un seul résultat MUG-CER-35"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-104",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Consulter un produit inexistant",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Basse"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-NF-02"
+      ],
+      "description": "Exigences couvertes : EX-NF-02\nJeux de données : aucun\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "GET /api/products/p-999",
+        "data": "id=p-999",
+        "result": "404 NOT_FOUND au format standard"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-105",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Créer un panier, ajouter et cumuler un article",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-PAN-01",
+        "EX-PAN-04"
+      ],
+      "description": "Exigences couvertes : EX-PAN-01, EX-PAN-04\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "POST /api/carts",
+        "data": "aucune",
+        "result": "201, panier vide"
+      },
+      {
+        "action": "Ajouter p-001 x2",
+        "data": "p-001, 2",
+        "result": "Total 44,70 EUR dont 4,90 de livraison"
+      },
+      {
+        "action": "Ajouter p-001 x1",
+        "data": "p-001, 1",
+        "result": "Une ligne, quantité 3, livraison offerte"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-106",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Refuser un produit en rupture ou une quantité supérieure au stock",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CAT-03",
+        "EX-PAN-03"
+      ],
+      "description": "Exigences couvertes : EX-CAT-03, EX-PAN-03\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "Ajouter p-003 (stock 0)",
+        "data": "p-003, 1",
+        "result": "409 OUT_OF_STOCK"
+      },
+      {
+        "action": "Ajouter p-005 x3 (stock 2)",
+        "data": "p-005, 3",
+        "result": "409, available=2"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-107",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Quantités hors bornes (0 et 11)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-PAN-03"
+      ],
+      "description": "Exigences couvertes : EX-PAN-03\nJeux de données : JDD-PAN-02\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "Ajouter quantité 0 puis 11",
+        "data": "0 ; 11",
+        "result": "400 VALIDATION_ERROR sur quantity"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-108",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Appliquer un code promo inconnu puis BIENVENUE10",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-PAN-05",
+        "EX-PAN-04"
+      ],
+      "description": "Exigences couvertes : EX-PAN-05, EX-PAN-04\nJeux de données : JDD-PRO-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "POST promo NOEL99",
+        "data": "NOEL99",
+        "result": "422 PROMO_INVALID"
+      },
+      {
+        "action": "POST promo bienvenue10",
+        "data": "bienvenue10",
+        "result": "Remise 1,99 EUR (arrondi inférieur)"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-109",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Passer une commande valide",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Critique"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CMD-01"
+      ],
+      "description": "Exigences couvertes : EX-CMD-01\nJeux de données : JDD-CLI-01, JDD-PAY-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "POST /api/orders",
+        "data": "client valide, carte 4242...",
+        "result": "201, statut PAYEE, référence PAY-xxxxxx"
+      },
+      {
+        "action": "GET /api/products/p-001",
+        "data": "",
+        "result": "Stock 49"
+      },
+      {
+        "action": "GET panier",
+        "data": "",
+        "result": "404 : panier clôturé"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-110",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Refuser des données client ou une carte invalides",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CMD-02"
+      ],
+      "description": "Exigences couvertes : EX-CMD-02\nJeux de données : JDD-CLI-02, JDD-PAY-03\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "Commander avec email invalide",
+        "data": "pas-un-email",
+        "result": "400 sur email"
+      },
+      {
+        "action": "Commander avec carte non Luhn",
+        "data": "4242424242424241",
+        "result": "400 sur cardNumber"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-111",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Paiement refusé par le prestataire",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Critique"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-CMD-03"
+      ],
+      "description": "Exigences couvertes : EX-CMD-03\nJeux de données : JDD-PAY-02\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "Commander avec la carte refusée",
+        "data": "4000000000000002",
+        "result": "402 PAYMENT_DECLINED"
+      },
+      {
+        "action": "GET panier",
+        "data": "",
+        "result": "Panier conservé"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-112",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Contrôle d'accès du backoffice",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Critique"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-BO-01"
+      ],
+      "description": "Exigences couvertes : EX-BO-01\nJeux de données : JDD-ADM-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "GET /api/admin/orders sans jeton",
+        "data": "",
+        "result": "401"
+      },
+      {
+        "action": "Avec jeton",
+        "data": "adminToken",
+        "result": "200, commande visible"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-113",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Transitions de statut de commande",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-BO-02"
+      ],
+      "description": "Exigences couvertes : EX-BO-02\nJeux de données : JDD-ADM-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "PAYEE -> LIVREE",
+        "data": "",
+        "result": "409 INVALID_TRANSITION"
+      },
+      {
+        "action": "PAYEE -> EXPEDIEE",
+        "data": "",
+        "result": "200"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-114",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Robustesse : JSON malformé et route inconnue",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Basse"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-NF-02"
+      ],
+      "description": "Exigences couvertes : EX-NF-02\nJeux de données : aucun\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "POST avec JSON tronqué",
+        "data": "{\"productId\": \"p-001\",",
+        "result": "400 MALFORMED_JSON"
+      },
+      {
+        "action": "GET /api/inexistant",
+        "data": "",
+        "result": "404 JSON"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-115",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Modifier la quantité et retirer une ligne via l'API",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "postman",
+        "EX-PAN-02"
+      ],
+      "description": "Exigences couvertes : EX-PAN-02\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
+    },
+    "xray_test_repository_folder": "/ShopQA/Postman",
+    "steps": [
+      {
+        "action": "PATCH quantité 1",
+        "data": "p-001",
+        "result": "Totaux recalculés"
+      },
+      {
+        "action": "DELETE ligne p-004",
+        "data": "p-004",
+        "result": "Ligne retirée"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-201",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Parcours d'achat complet avec carte acceptée (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Critique"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-CMD-01",
+        "EX-PAN-01",
+        "EX-PAN-04"
+      ],
+      "description": "Exigences couvertes : EX-CMD-01, EX-PAN-01, EX-PAN-04\nJeux de données : JDD-CLI-01, JDD-PAY-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Ajouter p-002 x1 et p-004 x2",
+        "data": "",
+        "result": "Badge panier = 3"
+      },
+      {
+        "action": "Ouvrir le panier",
+        "data": "",
+        "result": "Sous-total 70,00 EUR, livraison offerte"
+      },
+      {
+        "action": "Payer",
+        "data": "4242 4242 4242 4242",
+        "result": "Confirmation CMD-xxxxx, stock p-002 = 19"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-202",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Filtrer et rechercher dans le catalogue (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-CAT-01",
+        "EX-CAT-02"
+      ],
+      "description": "Exigences couvertes : EX-CAT-01, EX-CAT-02\nJeux de données : JDD-CAT-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Filtrer Maison",
+        "data": "maison",
+        "result": "3 produits"
+      },
+      {
+        "action": "Rechercher chargeur",
+        "data": "chargeur",
+        "result": "1 produit p-008"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-203",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Produit en rupture non commandable (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-CAT-03"
+      ],
+      "description": "Exigences couvertes : EX-CAT-03\nJeux de données : JDD-CAT-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Afficher p-003",
+        "data": "",
+        "result": "Indisponible, bouton désactivé"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-204",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Modifier, dépasser le stock et retirer une ligne (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-PAN-02",
+        "EX-PAN-03"
+      ],
+      "description": "Exigences couvertes : EX-PAN-02, EX-PAN-03\nJeux de données : JDD-PAN-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Passer la lampe à 2",
+        "data": "2",
+        "result": "Total ligne 79,80 EUR"
+      },
+      {
+        "action": "Passer la lampe à 3",
+        "data": "3",
+        "result": "Message stock insuffisant, quantité revenue à 2"
+      },
+      {
+        "action": "Retirer les lignes",
+        "data": "",
+        "result": "Panier vide affiché"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-205",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Seuil de livraison gratuite et code promo (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-PAN-04",
+        "EX-PAN-05"
+      ],
+      "description": "Exigences couvertes : EX-PAN-04, EX-PAN-05\nJeux de données : JDD-PRO-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Panier plaid 59 EUR",
+        "data": "",
+        "result": "Livraison offerte"
+      },
+      {
+        "action": "Code CODEFAUX",
+        "data": "CODEFAUX",
+        "result": "Message code inconnu"
+      },
+      {
+        "action": "Code BIENVENUE10",
+        "data": "BIENVENUE10",
+        "result": "Remise 5,90, total 53,10, livraison offerte"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-206",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Paiement refusé : message et panier conservé (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Critique"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-CMD-03"
+      ],
+      "description": "Exigences couvertes : EX-CMD-03\nJeux de données : JDD-PAY-02\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Payer avec la carte refusée",
+        "data": "4000 0000 0000 0002",
+        "result": "Message de refus, badge panier inchangé"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-207",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Formulaire de commande invalide (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-CMD-02"
+      ],
+      "description": "Exigences couvertes : EX-CMD-02\nJeux de données : JDD-CLI-02, JDD-PAY-03\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Email, code postal puis carte invalides",
+        "data": "voir JDD-CLI-02",
+        "result": "Message d'erreur explicite à chaque soumission"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-208",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Expédier puis livrer une commande depuis le backoffice (UI)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Haute"
+      },
+      "labels": [
+        "automatise",
+        "playwright",
+        "EX-BO-01",
+        "EX-BO-02"
+      ],
+      "description": "Exigences couvertes : EX-BO-01, EX-BO-02\nJeux de données : JDD-ADM-01\nAutomatisation : Playwright"
+    },
+    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "steps": [
+      {
+        "action": "Jeton incorrect",
+        "data": "jeton-incorrect",
+        "result": "Message d'accès refusé"
+      },
+      {
+        "action": "Jeton valide, Expédier puis Livrer",
+        "data": "adminToken",
+        "result": "Statut EXPEDIEE puis LIVREE, annulation plus proposée"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-301",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Charge légère du catalogue",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "automatise",
+        "autocannon",
+        "EX-NF-01"
+      ],
+      "description": "Exigences couvertes : EX-NF-01\nJeux de données : JDD-CAT-01\nAutomatisation : autocannon"
+    },
+    "xray_test_repository_folder": "/ShopQA/autocannon",
+    "steps": [
+      {
+        "action": "25 connexions pendant 10 s sur 3 routes catalogue",
+        "data": "",
+        "result": "p99 < 250 ms, débit >= 300 req/s, 0 erreur"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-401",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Parcours d'achat au clavier uniquement (accessibilité)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Moyenne"
+      },
+      "labels": [
+        "manuel",
+        "manuel",
+        "EX-CMD-01"
+      ],
+      "description": "Exigences couvertes : EX-CMD-01\nJeux de données : JDD-CLI-01, JDD-PAY-01\nAutomatisation : Manuel"
+    },
+    "xray_test_repository_folder": "/ShopQA/Manuels",
+    "steps": [
+      {
+        "action": "Naviguer avec Tab du catalogue à la confirmation",
+        "data": "",
+        "result": "Tous les contrôles atteignables, focus visible"
+      }
+    ]
+  },
+  {
+    "update_key": "SHOP-402",
+    "testtype": "Manual",
+    "fields": {
+      "summary": "Affichage du catalogue et du panier sur mobile (375 px)",
+      "project": {
+        "key": "SHOP"
+      },
+      "priority": {
+        "name": "Basse"
+      },
+      "labels": [
+        "manuel",
+        "manuel",
+        "EX-CAT-01"
+      ],
+      "description": "Exigences couvertes : EX-CAT-01\nJeux de données : JDD-CAT-01\nAutomatisation : Manuel"
+    },
+    "xray_test_repository_folder": "/ShopQA/Manuels",
+    "steps": [
+      {
+        "action": "Ouvrir catalogue et panier en 375 px",
+        "data": "",
+        "result": "Pas de défilement horizontal, boutons utilisables"
+      }
+    ]
+  }
+]

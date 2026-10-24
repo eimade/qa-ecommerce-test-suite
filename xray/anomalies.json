@@ -1,0 +1,23 @@
+{
+  "description": "Registre des anomalies de la campagne (équivalent des tickets Bug JIRA liés aux exécutions Xray). Gabarit : docs/06-gabarit-anomalie.md.",
+  "anomalies": [
+    {
+      "id": "ANO-001",
+      "titre": "La recherche « casque » remonte aussi « Casquette en laine »",
+      "severite": "Mineure",
+      "priorite": "Basse",
+      "statut": "Ouverte",
+      "exigence": "EX-CAT-02",
+      "casDeTest": "SHOP-103",
+      "environnement": "local, version 1.0.0",
+      "etapes": [
+        "Ouvrir le catalogue",
+        "Saisir « casque » dans la recherche puis Filtrer"
+      ],
+      "resultatAttendu": "Seul le « Casque Bluetooth » est proposé",
+      "resultatObtenu": "« Casquette en laine » (p-003) et « Casque Bluetooth » (p-007) sont proposés : la recherche porte sur une sous-chaîne",
+      "analyse": "Détectée pendant la conception des tests unitaires du catalogue. Comportement à arbitrer par le Product Owner (recherche par mot entier ou par préfixe de mot). Le cas SHOP-103 utilise un terme non ambigu en attendant la décision.",
+      "detecteeLe": "2026-10-24"
+    }
+  ]
+}
