@@ -1,4 +1,4 @@
-# Rapport de campagne de tests - ShopQA 1.0.0
+# Rapport de campagne de tests - Uimad QA 1.0.0
 
 > Généré le 2026-10-24 par `npm run report` à partir des rapports Newman, Playwright, autocannon et Vitest de l'exécution.
 

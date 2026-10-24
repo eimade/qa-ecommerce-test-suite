@@ -1,5 +1,5 @@
 // Client minimal partagé par les pages de la boutique de démonstration.
-const CART_KEY = 'shopqa.cartId';
+const CART_KEY = 'uimad-qa.cartId';
 
 export const euros = (cents) =>
   (cents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });

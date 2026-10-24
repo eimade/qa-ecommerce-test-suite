@@ -17,7 +17,7 @@ if (results.size === 0) {
 }
 
 const execution = buildXrayExecution(referentiel, results, {
-  summary: `Campagne de régression ShopQA ${referentiel.version}`,
+  summary: `Campagne de régression Uimad QA ${referentiel.version}`,
   environment: process.env.CI ? 'ci' : 'local',
   revision: process.env.GITHUB_SHA ?? process.env.BUILD_SOURCEVERSION ?? 'locale',
 });

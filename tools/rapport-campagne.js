@@ -29,7 +29,7 @@ const pct = (x) => `${(x * 100).toFixed(1)} %`;
 const date = new Date().toISOString().slice(0, 10);
 
 const lines = [
-  `# Rapport de campagne de tests - ShopQA ${ref.version}`,
+  `# Rapport de campagne de tests - Uimad QA ${ref.version}`,
   '',
   `> Généré le ${date} par \`npm run report\` à partir des rapports Newman, Playwright, autocannon et Vitest de l'exécution.`,
   '',

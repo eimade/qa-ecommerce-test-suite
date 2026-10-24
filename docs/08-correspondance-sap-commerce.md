@@ -4,7 +4,7 @@ SAP Commerce (ex-Hybris) est un progiciel sous licence, inaccessible pour ce pro
 
 ## Correspondance des modules
 
-| Domaine ShopQA | Module / concept SAP Commerce | Cas ShopQA | Adaptation sur un projet SAP Commerce |
+| Domaine Uimad QA | Module / concept SAP Commerce | Cas Uimad QA | Adaptation sur un projet SAP Commerce |
 |---|---|---|---|
 | Catalogue (`GET /products`, filtres, recherche) | Product Catalog (catalogue *Staged* / *Online*, synchronisation), Solr Facet Search | SHOP-101 à SHOP-104, SHOP-202 | Tester sur la version *Online* après synchronisation ; ajouter des cas sur l'indexation Solr (produit visible après indexation) et les facettes |
 | Rupture de stock | Stock Service, Warehouse, *StockLevel* | SHOP-106, SHOP-203 | Jeux de données par entrepôt et point de service ; statut *forceInStock* |

@@ -1,4 +1,4 @@
-name: CI - campagne de tests ShopQA
+name: CI - campagne de tests Uimad QA
 
 on:
   push:

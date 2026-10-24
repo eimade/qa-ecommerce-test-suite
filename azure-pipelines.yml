@@ -101,7 +101,7 @@ stages:
                 reports/newman/junit.xml
                 reports/playwright/junit.xml
               mergeTestResults: true
-              testRunTitle: Campagne de régression ShopQA
+              testRunTitle: Campagne de régression Uimad QA
           - task: PublishPipelineArtifact@1
             condition: succeededOrFailed()
             inputs:

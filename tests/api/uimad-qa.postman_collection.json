@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "ShopQA - API boutique e-commerce",
+    "name": "Uimad QA - API boutique e-commerce",
     "description": "Campagne de tests API de la boutique de démonstration. Chaque requête porte la clé du cas de test Xray (SHOP-1xx) pour la traçabilité exigences <-> tests. Exécution : npm run test:api (Newman).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },

@@ -1,4 +1,4 @@
-# ShopQA : stratégie et automatisation des tests d'une boutique e-commerce
+# Uimad QA : stratégie et automatisation des tests d'une boutique e-commerce
 
 [![CI](https://github.com/eimade/qa-ecommerce-test-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/eimade/qa-ecommerce-test-suite/actions/workflows/ci.yml)
 

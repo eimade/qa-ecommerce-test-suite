@@ -1,4 +1,4 @@
-# Plan de tests - campagne de régression ShopQA 1.0.0
+# Plan de tests - campagne de régression Uimad QA 1.0.0
 
 | Élément | Valeur |
 |---|---|

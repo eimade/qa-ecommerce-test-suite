@@ -1,4 +1,4 @@
-# Stratégie de tests - ShopQA
+# Stratégie de tests - Uimad QA
 
 ## 1. Contexte et objectifs
 

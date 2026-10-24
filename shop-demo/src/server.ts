@@ -13,7 +13,7 @@ const service = new ShopService(new SimulatedPaymentGateway());
 const app = createApp({ service, adminToken, enableTestReset: process.env.ENABLE_TEST_RESET === 'true' });
 
 const server = app.listen(port, () => {
-  console.log(`ShopQA démo démarrée sur http://localhost:${port}`);
+  console.log(`Uimad QA démo démarrée sur http://localhost:${port}`);
 });
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

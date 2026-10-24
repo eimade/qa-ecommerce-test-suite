@@ -11,7 +11,7 @@ const problems = checkReferentiel(ref);
 
 // Détection de dérive : chaque cas automatisé doit être réellement implémenté.
 const sources = {
-  'Postman/Newman': readFileSync('tests/api/shopqa.postman_collection.json', 'utf8'),
+  'Postman/Newman': readFileSync('tests/api/uimad-qa.postman_collection.json', 'utf8'),
   Playwright: readdirSync('tests/e2e').filter((f) => f.endsWith('.spec.ts')).map((f) => readFileSync(`tests/e2e/${f}`, 'utf8')).join('\n'),
   autocannon: readFileSync('tests/perf/charge-catalogue.js', 'utf8'),
 };
@@ -23,7 +23,7 @@ if (problems.length) {
   process.exit(1);
 }
 
-const folderOf = (c) => `/ShopQA/${c.outil === 'Manuel' ? 'Manuels' : c.outil.split('/')[0]}`;
+const folderOf = (c) => `/Uimad QA/${c.outil === 'Manuel' ? 'Manuels' : c.outil.split('/')[0]}`;
 
 // ---- JSON Xray ----
 const jsonImport = ref.cas.map((c) => ({

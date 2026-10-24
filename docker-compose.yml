@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: shop-demo/Dockerfile
-    image: shopqa-demo:local
+    image: uimad-qa-demo:local
     ports:
       - "${SHOP_HOST_PORT:-13100}:3000"
     environment:
@@ -28,7 +28,7 @@ services:
     volumes:
       - ./tests/api:/etc/newman:ro
     command: >
-      run shopqa.postman_collection.json
+      run uimad-qa.postman_collection.json
       -e local.postman_environment.json
       --env-var baseUrl=http://shop:3000
       --env-var adminToken=${ADMIN_TOKEN:-demo-admin-token-local}

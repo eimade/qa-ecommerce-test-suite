@@ -17,7 +17,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-01\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "GET /api/products",
@@ -45,7 +45,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-02, EX-NF-02\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "GET /api/products?category=high-tech",
@@ -77,7 +77,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-02\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "GET /api/products?q=mug",
@@ -104,7 +104,7 @@
       ],
       "description": "Exigences couvertes : EX-NF-02\nJeux de données : aucun\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "GET /api/products/p-999",
@@ -132,7 +132,7 @@
       ],
       "description": "Exigences couvertes : EX-PAN-01, EX-PAN-04\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "POST /api/carts",
@@ -170,7 +170,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-03, EX-PAN-03\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "Ajouter p-003 (stock 0)",
@@ -202,7 +202,7 @@
       ],
       "description": "Exigences couvertes : EX-PAN-03\nJeux de données : JDD-PAN-02\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "Ajouter quantité 0 puis 11",
@@ -230,7 +230,7 @@
       ],
       "description": "Exigences couvertes : EX-PAN-05, EX-PAN-04\nJeux de données : JDD-PRO-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "POST promo NOEL99",
@@ -262,7 +262,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-01\nJeux de données : JDD-CLI-01, JDD-PAY-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "POST /api/orders",
@@ -299,7 +299,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-02\nJeux de données : JDD-CLI-02, JDD-PAY-03\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "Commander avec email invalide",
@@ -331,7 +331,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-03\nJeux de données : JDD-PAY-02\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "Commander avec la carte refusée",
@@ -363,7 +363,7 @@
       ],
       "description": "Exigences couvertes : EX-BO-01\nJeux de données : JDD-ADM-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "GET /api/admin/orders sans jeton",
@@ -395,7 +395,7 @@
       ],
       "description": "Exigences couvertes : EX-BO-02\nJeux de données : JDD-ADM-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "PAYEE -> LIVREE",
@@ -427,7 +427,7 @@
       ],
       "description": "Exigences couvertes : EX-NF-02\nJeux de données : aucun\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "POST avec JSON tronqué",
@@ -459,7 +459,7 @@
       ],
       "description": "Exigences couvertes : EX-PAN-02\nJeux de données : JDD-CAT-01\nAutomatisation : Postman/Newman"
     },
-    "xray_test_repository_folder": "/ShopQA/Postman",
+    "xray_test_repository_folder": "/Uimad QA/Postman",
     "steps": [
       {
         "action": "PATCH quantité 1",
@@ -493,7 +493,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-01, EX-PAN-01, EX-PAN-04\nJeux de données : JDD-CLI-01, JDD-PAY-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Ajouter p-002 x1 et p-004 x2",
@@ -531,7 +531,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-01, EX-CAT-02\nJeux de données : JDD-CAT-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Filtrer Maison",
@@ -563,7 +563,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-03\nJeux de données : JDD-CAT-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Afficher p-003",
@@ -591,7 +591,7 @@
       ],
       "description": "Exigences couvertes : EX-PAN-02, EX-PAN-03\nJeux de données : JDD-PAN-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Passer la lampe à 2",
@@ -629,7 +629,7 @@
       ],
       "description": "Exigences couvertes : EX-PAN-04, EX-PAN-05\nJeux de données : JDD-PRO-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Panier plaid 59 EUR",
@@ -666,7 +666,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-03\nJeux de données : JDD-PAY-02\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Payer avec la carte refusée",
@@ -693,7 +693,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-02\nJeux de données : JDD-CLI-02, JDD-PAY-03\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Email, code postal puis carte invalides",
@@ -726,7 +726,7 @@
       ],
       "description": "Exigences couvertes : EX-BO-01, EX-BO-02\nJeux de données : JDD-ADM-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Jeton incorrect",
@@ -758,7 +758,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-02\nJeux de données : JDD-CAT-01\nAutomatisation : Playwright"
     },
-    "xray_test_repository_folder": "/ShopQA/Playwright",
+    "xray_test_repository_folder": "/Uimad QA/Playwright",
     "steps": [
       {
         "action": "Ouvrir /commande avec un chargement du panier ralenti",
@@ -785,7 +785,7 @@
       ],
       "description": "Exigences couvertes : EX-NF-01\nJeux de données : JDD-CAT-01\nAutomatisation : autocannon"
     },
-    "xray_test_repository_folder": "/ShopQA/autocannon",
+    "xray_test_repository_folder": "/Uimad QA/autocannon",
     "steps": [
       {
         "action": "25 connexions pendant 10 s sur 3 routes catalogue",
@@ -812,7 +812,7 @@
       ],
       "description": "Exigences couvertes : EX-CMD-01\nJeux de données : JDD-CLI-01, JDD-PAY-01\nAutomatisation : Manuel"
     },
-    "xray_test_repository_folder": "/ShopQA/Manuels",
+    "xray_test_repository_folder": "/Uimad QA/Manuels",
     "steps": [
       {
         "action": "Naviguer avec Tab du catalogue à la confirmation",
@@ -839,7 +839,7 @@
       ],
       "description": "Exigences couvertes : EX-CAT-01\nJeux de données : JDD-CAT-01\nAutomatisation : Manuel"
     },
-    "xray_test_repository_folder": "/ShopQA/Manuels",
+    "xray_test_repository_folder": "/Uimad QA/Manuels",
     "steps": [
       {
         "action": "Ouvrir catalogue et panier en 375 px",

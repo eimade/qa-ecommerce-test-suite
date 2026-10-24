@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ShopQA - Backoffice</title>
+  <title>Uimad QA - Backoffice</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <header>
-    <a class="brand" href="/">ShopQA</a>
+    <a class="brand" href="/">Uimad QA</a>
     <a href="/">Catalogue</a>
     <a href="/admin">Backoffice</a>
   </header>
@@ -29,14 +29,14 @@
 
     const $ = (id) => document.querySelector(`[data-testid="${id}"]`);
     const NEXT = { PAYEE: ['EXPEDIEE', 'ANNULEE'], EXPEDIEE: ['LIVREE'], LIVREE: [], ANNULEE: [] };
-    let token = sessionStorage.getItem('shopqa.adminToken') ?? '';
+    let token = sessionStorage.getItem('uimad-qa.adminToken') ?? '';
 
     const adminApi = (path, options = {}) => api(path, { ...options, headers: { 'x-admin-token': token } });
 
     async function load() {
       try {
         const orders = await adminApi('/admin/orders');
-        sessionStorage.setItem('shopqa.adminToken', token);
+        sessionStorage.setItem('uimad-qa.adminToken', token);
         $('orders-table').hidden = false;
         $('orders').replaceChildren(...orders.map((o) => el('tr', { testid: `order-${o.id}` },
           el('td', {}, o.id), el('td', {}, o.customer.email), el('td', {}, euros(o.totals.totalCents)),
