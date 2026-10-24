@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopQA - Commande</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">ShopQA</a>
+    <a href="/">Catalogue</a>
+    <a href="/panier" data-testid="cart-link">Panier (<span data-testid="cart-count">0</span>)</a>
+    <a href="/admin">Backoffice</a>
+  </header>
+  <main>
+    <h1>Commande</h1>
+    <div class="message" data-testid="message" role="status" hidden></div>
+    <p>Total à payer : <strong data-testid="checkout-total"></strong></p>
+    <form class="checkout" data-testid="checkout-form" novalidate>
+      <label>Nom complet <input name="name" autocomplete="name" data-testid="name"></label>
+      <label>Email <input name="email" type="email" autocomplete="email" data-testid="email"></label>
+      <label>Adresse <input name="address" autocomplete="street-address" data-testid="address"></label>
+      <label>Code postal <input name="postalCode" inputmode="numeric" data-testid="postalCode"></label>
+      <label>Ville <input name="city" data-testid="city"></label>
+      <label>Numéro de carte (simulé) <input name="cardNumber" inputmode="numeric" data-testid="cardNumber"></label>
+      <p class="muted">Paiement simulé : 4242 4242 4242 4242 accepté, 4000 0000 0000 0002 refusé.</p>
+      <button type="submit" data-testid="pay">Payer</button>
+    </form>
+    <section data-testid="confirmation" hidden>
+      <h2>Merci pour votre commande</h2>
+      <p>Numéro de commande : <strong data-testid="order-id"></strong></p>
+      <p>Montant payé : <strong data-testid="order-total"></strong></p>
+      <p>Référence de paiement : <span data-testid="payment-ref"></span></p>
+      <a href="/">Continuer mes achats</a>
+    </section>
+  </main>
+  <script type="module">
+    import { api, currentCartId, euros, forgetCart, refreshCartBadge, showMessage } from '/app.js';
+
+    const $ = (id) => document.querySelector(`[data-testid="${id}"]`);
+    const cartId = await currentCartId();
+    const cart = await api(`/carts/${cartId}`);
+    $('checkout-total').textContent = euros(cart.totals.totalCents);
+    refreshCartBadge();
+
+    $('checkout-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      $('pay').disabled = true;
+      try {
+        const order = await api('/orders', { method: 'POST', body: {
+          cartId,
+          customer: { name: f.name, email: f.email, address: f.address, postalCode: f.postalCode, city: f.city },
+          payment: { cardNumber: f.cardNumber },
+        } });
+        forgetCart();
+        e.target.hidden = true;
+        $('message').hidden = true;
+        $('order-id').textContent = order.id;
+        $('order-total').textContent = euros(order.totals.totalCents);
+        $('payment-ref').textContent = order.paymentReference;
+        $('confirmation').hidden = false;
+        refreshCartBadge();
+      } catch (err) {
+        showMessage(err.message, 'error');
+      } finally {
+        $('pay').disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

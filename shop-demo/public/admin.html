@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopQA - Backoffice</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">ShopQA</a>
+    <a href="/">Catalogue</a>
+    <a href="/admin">Backoffice</a>
+  </header>
+  <main>
+    <h1>Backoffice : commandes</h1>
+    <div class="message" data-testid="message" role="status" hidden></div>
+    <form class="toolbar" data-testid="token-form">
+      <input type="password" name="token" placeholder="Jeton administrateur" aria-label="Jeton administrateur" data-testid="admin-token">
+      <button type="submit">Charger les commandes</button>
+    </form>
+    <table data-testid="orders-table" hidden>
+      <thead><tr><th>Commande</th><th>Client</th><th>Total</th><th>Statut</th><th>Action</th></tr></thead>
+      <tbody data-testid="orders"></tbody>
+    </table>
+  </main>
+  <script type="module">
+    import { api, euros, el, showMessage } from '/app.js';
+
+    const $ = (id) => document.querySelector(`[data-testid="${id}"]`);
+    const NEXT = { PAYEE: ['EXPEDIEE', 'ANNULEE'], EXPEDIEE: ['LIVREE'], LIVREE: [], ANNULEE: [] };
+    let token = sessionStorage.getItem('shopqa.adminToken') ?? '';
+
+    const adminApi = (path, options = {}) => api(path, { ...options, headers: { 'x-admin-token': token } });
+
+    async function load() {
+      try {
+        const orders = await adminApi('/admin/orders');
+        sessionStorage.setItem('shopqa.adminToken', token);
+        $('orders-table').hidden = false;
+        $('orders').replaceChildren(...orders.map((o) => el('tr', { testid: `order-${o.id}` },
+          el('td', {}, o.id), el('td', {}, o.customer.email), el('td', {}, euros(o.totals.totalCents)),
+          el('td', { testid: 'status' }, o.status),
+          el('td', {}, ...NEXT[o.status].map((s) => el('button', { class: 'secondary', testid: `to-${s}`, onclick: async () => {
+            try { await adminApi(`/admin/orders/${o.id}`, { method: 'PATCH', body: { status: s } }); await load(); }
+            catch (e) { showMessage(e.message, 'error'); }
+          } }, s))))));
+        if (orders.length === 0) showMessage('Aucune commande', 'info');
+        else $('message').hidden = true;
+      } catch (e) {
+        $('orders-table').hidden = true;
+        showMessage(e.message, 'error');
+      }
+    }
+
+    $('token-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      token = new FormData(e.target).get('token');
+      load();
+    });
+    if (token) load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopQA - Panier</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">ShopQA</a>
+    <a href="/">Catalogue</a>
+    <a href="/panier" data-testid="cart-link">Panier (<span data-testid="cart-count">0</span>)</a>
+    <a href="/admin">Backoffice</a>
+  </header>
+  <main>
+    <h1>Mon panier</h1>
+    <div class="message" data-testid="message" role="status" hidden></div>
+    <p data-testid="empty-cart" hidden>Votre panier est vide. <a href="/">Voir le catalogue</a></p>
+    <table data-testid="cart-table" hidden>
+      <thead><tr><th>Produit</th><th>Prix</th><th>Quantité</th><th>Total</th><th></th></tr></thead>
+      <tbody data-testid="cart-lines"></tbody>
+    </table>
+    <form class="toolbar" data-testid="promo-form" hidden>
+      <input name="code" placeholder="Code promo" aria-label="Code promo" data-testid="promo-input">
+      <button type="submit" class="secondary">Appliquer</button>
+    </form>
+    <div class="totals" data-testid="totals" hidden>
+      <div><span>Sous-total</span><span data-testid="subtotal"></span></div>
+      <div><span>Remise</span><span data-testid="discount"></span></div>
+      <div><span>Livraison</span><span data-testid="shipping"></span></div>
+      <div class="grand"><span>Total</span><span data-testid="total"></span></div>
+      <p><a href="/commande"><button type="button" data-testid="go-checkout">Passer commande</button></a></p>
+    </div>
+  </main>
+  <script type="module">
+    import { api, currentCartId, euros, el, refreshCartBadge, showMessage } from '/app.js';
+
+    const $ = (id) => document.querySelector(`[data-testid="${id}"]`);
+    let cartId;
+
+    function render(cart) {
+      const empty = cart.lines.length === 0;
+      $('empty-cart').hidden = !empty;
+      for (const id of ['cart-table', 'promo-form', 'totals']) $(id).hidden = empty;
+      $('cart-lines').replaceChildren(...cart.lines.map((l) => {
+        const qty = el('input', { type: 'number', min: '1', max: '10', value: String(l.quantity), 'aria-label': `Quantité ${l.name}`, testid: 'line-qty' });
+        qty.addEventListener('change', () => mutate(() => api(`/carts/${cartId}/items/${l.productId}`, { method: 'PATCH', body: { quantity: Number(qty.value) } })));
+        return el('tr', { testid: `line-${l.productId}` },
+          el('td', {}, l.name), el('td', {}, euros(l.unitPriceCents)), el('td', {}, qty),
+          el('td', { testid: 'line-total' }, euros(l.lineTotalCents)),
+          el('td', {}, el('button', { class: 'secondary', testid: 'remove-line', onclick: () => mutate(() => api(`/carts/${cartId}/items/${l.productId}`, { method: 'DELETE' })) }, 'Retirer')));
+      }));
+      $('subtotal').textContent = euros(cart.totals.subtotalCents);
+      $('discount').textContent = `- ${euros(cart.totals.discountCents)}`;
+      $('shipping').textContent = cart.totals.shippingCents === 0 ? 'Offerte' : euros(cart.totals.shippingCents);
+      $('total').textContent = euros(cart.totals.totalCents);
+    }
+
+    async function mutate(action) {
+      try {
+        render(await action());
+        await refreshCartBadge();
+      } catch (e) {
+        showMessage(e.message, 'error');
+        render(await api(`/carts/${cartId}`));
+      }
+    }
+
+    $('promo-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = new FormData(e.target).get('code');
+      mutate(async () => {
+        const cart = await api(`/carts/${cartId}/promo`, { method: 'POST', body: { code } });
+        showMessage(`Code ${cart.promoCode} appliqué`, 'success');
+        return cart;
+      });
+    });
+
+    cartId = await currentCartId();
+    render(await api(`/carts/${cartId}`));
+    refreshCartBadge();
+  </script>
+</body>
+</html>

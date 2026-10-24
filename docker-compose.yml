@@ -1,0 +1,34 @@
+# Environnement de recette local. Port hôte volontairement peu courant (13100).
+#   docker compose up -d --build         -> boutique sur http://localhost:13100
+#   docker compose --profile qa run --rm newman  -> campagne API dans un conteneur
+services:
+  shop:
+    build:
+      context: .
+      dockerfile: shop-demo/Dockerfile
+    image: shopqa-demo:local
+    ports:
+      - "${SHOP_HOST_PORT:-13100}:3000"
+    environment:
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-demo-admin-token-local}
+      # Environnement de recette : expose POST /api/test/reset pour des tests reproductibles.
+      ENABLE_TEST_RESET: "true"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  newman:
+    profiles: ["qa"]
+    image: postman/newman:6-alpine
+    depends_on:
+      shop:
+        condition: service_healthy
+    volumes:
+      - ./tests/api:/etc/newman:ro
+    command: >
+      run shopqa.postman_collection.json
+      -e local.postman_environment.json
+      --env-var baseUrl=http://shop:3000
+      --env-var adminToken=${ADMIN_TOKEN:-demo-admin-token-local}

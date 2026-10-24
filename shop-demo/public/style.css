@@ -1,0 +1,27 @@
+:root { font-family: system-ui, sans-serif; color: #1f2937; background: #f8fafc; }
+body { margin: 0; }
+header { background: #0f766e; color: #fff; padding: .8rem 1.5rem; display: flex; gap: 1.5rem; align-items: center; }
+header a { color: #fff; text-decoration: none; font-weight: 600; }
+header .brand { font-size: 1.2rem; margin-right: auto; }
+main { max-width: 960px; margin: 1.5rem auto; padding: 0 1rem; }
+.toolbar { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: .4rem; }
+.card h2 { font-size: 1rem; margin: 0; }
+.price { font-weight: 700; color: #0f766e; }
+.muted { color: #64748b; font-size: .85rem; }
+button { background: #0f766e; color: #fff; border: 0; border-radius: 6px; padding: .5rem .9rem; cursor: pointer; }
+button:disabled { background: #94a3b8; cursor: not-allowed; }
+button.secondary { background: #e2e8f0; color: #1f2937; }
+input, select { padding: .45rem; border: 1px solid #cbd5e1; border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
+th, td { padding: .5rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
+.totals { margin-top: 1rem; max-width: 320px; margin-left: auto; }
+.totals div { display: flex; justify-content: space-between; padding: .2rem 0; }
+.totals .grand { font-weight: 700; font-size: 1.1rem; border-top: 1px solid #cbd5e1; }
+form.checkout { display: grid; gap: .6rem; max-width: 420px; }
+form.checkout label { display: grid; gap: .2rem; }
+.message { padding: .7rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
+.message.error { background: #fee2e2; color: #991b1b; }
+.message.success { background: #dcfce7; color: #166534; }
+.message.info { background: #e0f2fe; color: #075985; }

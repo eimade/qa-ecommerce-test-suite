@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShopQA - Catalogue</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">ShopQA</a>
+    <a href="/">Catalogue</a>
+    <a href="/panier" data-testid="cart-link">Panier (<span data-testid="cart-count">0</span>)</a>
+    <a href="/admin">Backoffice</a>
+  </header>
+  <main>
+    <h1>Catalogue</h1>
+    <div class="message" data-testid="message" role="status" hidden></div>
+    <form class="toolbar" data-testid="search-form">
+      <input type="search" name="q" placeholder="Rechercher un produit" aria-label="Rechercher" data-testid="search-input">
+      <select name="category" aria-label="Catégorie" data-testid="category-filter">
+        <option value="">Toutes les catégories</option>
+        <option value="vetements">Vêtements</option>
+        <option value="maison">Maison</option>
+        <option value="high-tech">High-tech</option>
+      </select>
+      <button type="submit">Filtrer</button>
+    </form>
+    <p class="muted" data-testid="result-count"></p>
+    <div class="grid" data-testid="product-list"></div>
+  </main>
+  <script type="module">
+    import { api, currentCartId, euros, el, refreshCartBadge, showMessage } from '/app.js';
+
+    const list = document.querySelector('[data-testid="product-list"]');
+    const form = document.querySelector('[data-testid="search-form"]');
+
+    async function render() {
+      const params = new URLSearchParams();
+      const data = new FormData(form);
+      for (const key of ['q', 'category']) if (data.get(key)) params.set(key, data.get(key));
+      const products = await api(`/products?${params}`);
+      document.querySelector('[data-testid="result-count"]').textContent = `${products.length} produit(s)`;
+      list.replaceChildren(...products.map((p) => {
+        const qty = el('input', { type: 'number', min: '1', max: '10', value: '1', 'aria-label': `Quantité ${p.name}`, testid: 'qty-input' });
+        const add = el('button', { testid: 'add-to-cart', onclick: async () => {
+          try {
+            await api(`/carts/${await currentCartId()}/items`, { method: 'POST', body: { productId: p.id, quantity: Number(qty.value) } });
+            showMessage(`${p.name} ajouté au panier`, 'success');
+            await refreshCartBadge();
+          } catch (e) { showMessage(e.message, 'error'); }
+        } }, p.stock > 0 ? 'Ajouter au panier' : 'Rupture de stock');
+        if (p.stock === 0) add.disabled = true;
+        return el('article', { class: 'card', testid: `product-${p.id}` },
+          el('h2', {}, p.name),
+          el('span', { class: 'muted' }, `${p.sku} - ${p.description}`),
+          el('span', { class: 'price', testid: 'price' }, euros(p.priceCents)),
+          el('span', { class: 'muted', testid: 'stock' }, p.stock > 0 ? `En stock : ${p.stock}` : 'Indisponible'),
+          qty, add);
+      }));
+    }
+
+    form.addEventListener('submit', (e) => { e.preventDefault(); render().catch((err) => showMessage(err.message, 'error')); });
+    render().catch((err) => showMessage(err.message, 'error'));
+    refreshCartBadge();
+  </script>
+</body>
+</html>

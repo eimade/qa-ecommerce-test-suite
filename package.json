@@ -1,0 +1,43 @@
+{
+  "name": "qa-ecommerce-test-suite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ShopQA : stratégie et automatisation des tests d'une mini-boutique e-commerce",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p shop-demo/tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node shop-demo/dist/server.js",
+    "dev": "tsx shop-demo/src/server.ts",
+    "test:unit": "vitest run",
+    "test:api": "newman run tests/api/shopqa.postman_collection.json -e tests/api/local.postman_environment.json --reporters cli,htmlextra,json,junit --reporter-htmlextra-export reports/newman/rapport-newman.html --reporter-json-export reports/newman/newman.json --reporter-junit-export reports/newman/junit.xml",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --grep @smoke",
+    "test:perf": "node tests/perf/charge-catalogue.js",
+    "xray:results": "node xray/scripts/export-resultats-xray.js",
+    "xray:cases": "node xray/scripts/generer-import-tests.js",
+    "report": "node tools/rapport-campagne.js",
+    "validate:pipelines": "node tools/valider-pipelines.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.5",
+    "@types/supertest": "^7.2.1",
+    "autocannon": "^8.0.0",
+    "js-yaml": "^5.5.0",
+    "newman": "^6.2.3",
+    "newman-reporter-htmlextra": "^1.23.1",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}
