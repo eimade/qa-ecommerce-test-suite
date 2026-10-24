@@ -1,0 +1,1264 @@
+{
+  "info": {
+    "name": "ShopQA - API boutique e-commerce",
+    "description": "Campagne de tests API de la boutique de démonstration. Chaque requête porte la clé du cas de test Xray (SHOP-1xx) pour la traçabilité exigences <-> tests. Exécution : npm run test:api (Newman).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Contrôles transverses appliqués à chaque requête métier (clé SHOP-xxx ; la préparation",
+          "// est exclue du contrôle de temps car elle absorbe le démarrage à froid).",
+          "if (/SHOP-\\d{3}/.test(pm.info.requestName)) {",
+          "  pm.test('Temps de réponse < 500 ms', () => pm.expect(pm.response.responseTime).to.be.below(500));",
+          "}",
+          "if (pm.response.code !== 204) {",
+          "  pm.test('Réponse au format JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Préparation",
+      "description": "Remise à zéro du jeu de données de référence (JDD-CAT-01).",
+      "item": [
+        {
+          "name": "Réinitialiser les données de test",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/test/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "test",
+                "reset"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Remise à zéro effectuée (204)', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Catalogue",
+      "description": "Exigences EX-CAT-01 à EX-CAT-03.",
+      "item": [
+        {
+          "name": "SHOP-101 | Lister le catalogue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+                  "const products = pm.response.json();",
+                  "pm.test('8 produits du jeu de référence', () => pm.expect(products).to.have.lengthOf(8));",
+                  "pm.test('Contrat : champs obligatoires et prix en centimes entiers', () => {",
+                  "  products.forEach((p) => {",
+                  "    pm.expect(p).to.include.all.keys('id', 'sku', 'name', 'category', 'priceCents', 'stock');",
+                  "    pm.expect(Number.isInteger(p.priceCents) && p.priceCents > 0).to.be.true;",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-102 | Filtrer par catégorie",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?category=high-tech",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "high-tech"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+                  "const products = pm.response.json();",
+                  "pm.test('Uniquement la catégorie high-tech', () => {",
+                  "  pm.expect(products).to.have.lengthOf(2);",
+                  "  products.forEach((p) => pm.expect(p.category).to.eql('high-tech'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-102 | Catégorie inconnue refusée",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?category=jardin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "jardin"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400 VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-103 | Rechercher un produit",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?q=mug",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "mug"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Recherche insensible à la casse', () => {",
+                  "  const products = pm.response.json();",
+                  "  pm.expect(products.map((p) => p.sku)).to.eql(['MUG-CER-35']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-104 | Produit inexistant",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/p-999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "p-999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 404 au format d erreur standard', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json()).to.eql({ error: { code: 'NOT_FOUND', message: 'Produit introuvable' } });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Panier",
+      "description": "Exigences EX-PAN-01 à EX-PAN-05.",
+      "item": [
+        {
+          "name": "SHOP-105 | Créer un panier",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 201 et panier vide', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const cart = pm.response.json();",
+                  "  pm.expect(cart.lines).to.eql([]);",
+                  "  pm.expect(cart.totals.totalCents).to.eql(0);",
+                  "  pm.collectionVariables.set('cartId', cart.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-105 | Ajouter un article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-001\",\n  \"quantity\": 2\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+                  "const cart = pm.response.json();",
+                  "pm.test('Ligne créée avec le bon total', () => {",
+                  "  pm.expect(cart.lines).to.have.lengthOf(1);",
+                  "  pm.expect(cart.lines[0]).to.include({ productId: 'p-001', quantity: 2, lineTotalCents: 3980 });",
+                  "});",
+                  "pm.test('Frais de port appliqués sous 50 EUR', () => {",
+                  "  pm.expect(cart.totals).to.eql({ subtotalCents: 3980, discountCents: 0, shippingCents: 490, totalCents: 4470 });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-105 | Cumuler le même article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-001\",\n  \"quantity\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const cart = pm.response.json();",
+                  "pm.test('Une seule ligne, quantité cumulée à 3', () => {",
+                  "  pm.expect(cart.lines).to.have.lengthOf(1);",
+                  "  pm.expect(cart.lines[0].quantity).to.eql(3);",
+                  "});",
+                  "pm.test('Seuil de 50 EUR atteint : livraison offerte', () => pm.expect(cart.totals.shippingCents).to.eql(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-106 | Produit en rupture refusé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-003\",\n  \"quantity\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 409 OUT_OF_STOCK', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('OUT_OF_STOCK');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-106 | Quantité supérieure au stock refusée",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-005\",\n  \"quantity\": 3\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 409 avec le stock disponible en détail', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.details).to.eql({ productId: 'p-005', available: 2 });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-107 | Quantité hors bornes (0)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-004\",\n  \"quantity\": 0\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400 sur le champ quantity', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.details.field).to.eql('quantity');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-107 | Quantité hors bornes (11)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-004\",\n  \"quantity\": 11\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-115 | Modifier la quantité d une ligne",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items/p-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items",
+                "p-001"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Quantité mise à jour et totaux recalculés', () => {",
+                  "  const cart = pm.response.json();",
+                  "  pm.expect(cart.lines[0].quantity).to.eql(1);",
+                  "  pm.expect(cart.totals.totalCents).to.eql(1990 + 490);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-115 | Ajouter puis retirer une ligne",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"p-004\",\n  \"quantity\": 1\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Deux lignes dans le panier', () => pm.expect(pm.response.json().lines).to.have.lengthOf(2));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-115 | Retirer une ligne",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items/p-004",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items",
+                "p-004"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('La ligne p-004 est supprimée', () => {",
+                  "  const ids = pm.response.json().lines.map((l) => l.productId);",
+                  "  pm.expect(ids).to.eql(['p-001']);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-108 | Code promo inconnu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/promo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "promo"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"NOEL99\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 422 PROMO_INVALID', () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('PROMO_INVALID');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-108 | Code promo BIENVENUE10",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/promo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "promo"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"bienvenue10\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Remise de 10 % arrondie au centime inférieur', () => {",
+                  "  const cart = pm.response.json();",
+                  "  pm.expect(cart.promoCode).to.eql('BIENVENUE10');",
+                  "  pm.expect(cart.totals).to.eql({ subtotalCents: 1990, discountCents: 199, shippingCents: 490, totalCents: 2281 });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Commande",
+      "description": "Exigences EX-CMD-01 à EX-CMD-03.",
+      "item": [
+        {
+          "name": "SHOP-110 | Email client invalide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": \"{{cartId}}\",\n  \"customer\": {\n    \"name\": \"{{customerName}}\",\n    \"email\": \"pas-un-email\",\n    \"address\": \"12 rue de la Recette\",\n    \"postalCode\": \"75011\",\n    \"city\": \"Paris\"\n  },\n  \"payment\": {\n    \"cardNumber\": \"{{cardAccepted}}\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400 sur le champ email', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.details.field).to.eql('email');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-110 | Numéro de carte invalide (Luhn)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": \"{{cartId}}\",\n  \"customer\": {\n    \"name\": \"{{customerName}}\",\n    \"email\": \"{{customerEmail}}\",\n    \"address\": \"12 rue de la Recette\",\n    \"postalCode\": \"75011\",\n    \"city\": \"Paris\"\n  },\n  \"payment\": {\n    \"cardNumber\": \"4242424242424241\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400 sur le champ cardNumber', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.details.field).to.eql('cardNumber');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-111 | Paiement refusé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": \"{{cartId}}\",\n  \"customer\": {\n    \"name\": \"{{customerName}}\",\n    \"email\": \"{{customerEmail}}\",\n    \"address\": \"12 rue de la Recette\",\n    \"postalCode\": \"75011\",\n    \"city\": \"Paris\"\n  },\n  \"payment\": {\n    \"cardNumber\": \"{{cardDeclined}}\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 402 PAYMENT_DECLINED', () => {",
+                  "  pm.response.to.have.status(402);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('PAYMENT_DECLINED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-111 | Panier conservé après refus",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Le panier existe toujours avec sa ligne', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().lines).to.have.lengthOf(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-109 | Commande valide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cartId\": \"{{cartId}}\",\n  \"customer\": {\n    \"name\": \"{{customerName}}\",\n    \"email\": \"{{customerEmail}}\",\n    \"address\": \"12 rue de la Recette\",\n    \"postalCode\": \"75011\",\n    \"city\": \"Paris\"\n  },\n  \"payment\": {\n    \"cardNumber\": \"{{cardAccepted}}\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 201 et commande payée', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const order = pm.response.json();",
+                  "  pm.expect(order.id).to.match(/^CMD-\\d{5}$/);",
+                  "  pm.expect(order.status).to.eql('PAYEE');",
+                  "  pm.expect(order.paymentReference).to.match(/^PAY-\\d{6}$/);",
+                  "  pm.expect(order.totals.totalCents).to.eql(2281);",
+                  "  pm.collectionVariables.set('orderId', order.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-109 | Stock décrémenté",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/p-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "p-001"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Stock du T-shirt passé de 50 à 49', () => pm.expect(pm.response.json().stock).to.eql(49));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-109 | Panier clôturé après commande",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 404 : le panier a été consommé', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Backoffice",
+      "description": "Exigences EX-BO-01 et EX-BO-02.",
+      "item": [
+        {
+          "name": "SHOP-112 | Accès sans jeton refusé",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 401 UNAUTHORIZED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-112 | Lister les commandes avec jeton",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-admin-token",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('La commande créée est visible', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().map((o) => o.id)).to.include(pm.collectionVariables.get('orderId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-113 | Transition interdite PAYEE -> LIVREE",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-admin-token",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"LIVREE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 409 INVALID_TRANSITION', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('INVALID_TRANSITION');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-113 | Expédier la commande",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-admin-token",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/orders/{{orderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"EXPEDIEE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Commande expédiée', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().status).to.eql('EXPEDIEE');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 - Robustesse",
+      "description": "Exigence EX-NF-02 : erreurs au format stable.",
+      "item": [
+        {
+          "name": "SHOP-114 | JSON malformé",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "carts",
+                "{{cartId}}",
+                "items"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productId\": \"p-001\","
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 400 MALFORMED_JSON', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('MALFORMED_JSON');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SHOP-114 | Route inconnue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/inexistant",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "inexistant"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Statut 404 au format JSON', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "cartId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    }
+  ]
+}
